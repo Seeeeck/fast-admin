@@ -9,4 +9,5 @@ public class UserInfoVO {
     private String username;
     private String avatar;
     private List<RouteVO> menus;
+    private List<String> permissions;
 }

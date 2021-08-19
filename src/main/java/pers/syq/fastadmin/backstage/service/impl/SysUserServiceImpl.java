@@ -85,6 +85,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     @Override
     public List<String> listPermissionsByUserId(Long id) {
         List<String> permissionList = sysMenuService.listByUserId(id).stream().map(SysMenuEntity::getPerms).collect(Collectors.toList());
+        return parsePermissions(permissionList);
+    }
+
+    private List<String> parsePermissions(List<String> permissionList){
         List<String> permissions = new ArrayList<>();
         for (String permissionsStr : permissionList) {
             if (StrUtil.isNotBlank(permissionsStr)){
@@ -101,6 +105,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         userInfoVO.setUsername(sysUserEntity.getUsername());
         userInfoVO.setAvatar(sysUserEntity.getAvatar());
         List<SysMenuEntity> menus = sysMenuService.listByUserId(sysUserEntity.getId());
+        List<String> permissions = parsePermissions(menus.stream().map(SysMenuEntity::getPerms).collect(Collectors.toList()));
+        userInfoVO.setPermissions(permissions);
         List<RouteVO> routeVOList = menus.stream().filter(menu -> menu.getParentId() == 0)
                 .sorted(Comparator.comparingInt(SysMenuEntity::getOrderNum))
                 .map(menu -> {
