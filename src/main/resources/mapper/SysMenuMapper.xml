@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="pers.syq.fastadmin.backstage.mapper.SysMenuMapper">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="pers.syq.fastadmin.backstage.entity.SysMenuEntity" id="sysMenuMap">
+        <id property="id" column="id"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="name" column="name"/>
+        <result property="path" column="path"/>
+        <result property="perms" column="perms"/>
+        <result property="type" column="type"/>
+        <result property="icon" column="icon"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="hidden" column="hidden"/>
+    </resultMap>
+
+    <select id="selectListByUserId" resultMap="sysMenuMap">
+        select
+            sm.id, sm.parent_id, sm.name, sm.path, sm.perms, sm.type, sm.icon, sm.order_num, sm.hidden
+        from fast_admin.sys_user su
+                 left join fast_admin.sys_user_role sur on su.id = sur.user_id
+                 left join fast_admin.sys_role sr on sur.role_id = sr.id
+                 left join fast_admin.sys_role_menu srm on sr.id = srm.role_id
+                 left join fast_admin.sys_menu sm on srm.menu_id = sm.id
+        where su.id = #{userId}
+    </select>
+
+</mapper>
