@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.entity.SysUserRoleEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,5 +15,7 @@ import java.util.Map;
  */
 public interface SysUserRoleService extends IService<SysUserRoleEntity> {
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveUserRoles(List<Long> roleIdList, Long userId);
 }
 

@@ -15,7 +15,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         this.strictInsertFill(metaObject, "createTime", Date.class, DateUtil.date());
-        this.strictInsertFill(metaObject, "expireTime", Date.class, DateUtil.offsetMinute(DateUtil.date(),10));
     }
 
     @Override

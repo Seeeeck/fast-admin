@@ -2,7 +2,9 @@ package pers.syq.fastadmin.backstage.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import pers.syq.fastadmin.backstage.common.entity.AuthUser;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
@@ -25,28 +27,28 @@ public class SysMenuController {
     @Autowired
     private SysMenuService sysMenuService;
 
-    @PreAuthorize("hasAuthority('sys:menu:list')")
-    @GetMapping
-    public R<PageUtils> list(@RequestParam Map<String, Object> params){
+    @PreAuthorize("hasAnyAuthority('sys:menu:page','ROLE_ADMIN')")
+    @GetMapping("/page")
+    public R<PageUtils> page(@RequestParam Map<String, Object> params){
         PageUtils page = sysMenuService.queryPage(params);
         return R.ok(page);
     }
 
-    @PreAuthorize("hasAuthority('sys:menu:get')")
+    @PreAuthorize("hasAnyAuthority('sys:menu:get','ROLE_ADMIN')")
     @GetMapping("/{id}")
     public R<SysMenuEntity> getById(@PathVariable("id") Long id){
 		SysMenuEntity sysMenu = sysMenuService.getById(id);
         return R.ok(sysMenu);
     }
 
-    @PreAuthorize("hasAuthority('sys:menu:save')")
+    @PreAuthorize("hasAnyAuthority('sys:menu:save','ROLE_ADMIN')")
     @PostMapping
-    public R<?> save(@RequestBody SysMenuEntity sysMenu){
+    public R<?> save(@RequestBody SysMenuEntity sysMenu, @AuthenticationPrincipal AuthUser user){
 		sysMenuService.save(sysMenu);
         return R.ok();
     }
 
-    @PreAuthorize("hasAuthority('sys:menu:update')")
+    @PreAuthorize("hasAnyAuthority('sys:menu:update','ROLE_ADMIN')")
     @PutMapping
     public R<?> update(@RequestBody SysMenuEntity sysMenu){
 		sysMenuService.updateById(sysMenu);
@@ -54,7 +56,7 @@ public class SysMenuController {
     }
 
 
-    @PreAuthorize("hasAuthority('sys:menu:delete')")
+    @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
 		sysMenuService.removeByIds(ids);

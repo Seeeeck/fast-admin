@@ -22,5 +22,11 @@ spring:
       pool:
         max-wait: 1000ms
 
+
+
+
 server:
   port: 9000
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

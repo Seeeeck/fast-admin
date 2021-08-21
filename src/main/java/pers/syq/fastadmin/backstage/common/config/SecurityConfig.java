@@ -1,4 +1,4 @@
-package pers.syq.fastadmin.backstage.config;
+package pers.syq.fastadmin.backstage.common.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,10 +16,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import pers.syq.fastadmin.backstage.common.constants.SecurityConstants;
+import pers.syq.fastadmin.backstage.common.filter.JwtAuthorizationFilter;
 import pers.syq.fastadmin.backstage.exception.JwtAccessDeniedHandler;
 import pers.syq.fastadmin.backstage.exception.JwtAuthenticationEntryPoint;
-import pers.syq.fastadmin.backstage.filter.JwtAuthorizationFilter;
-import pers.syq.fastadmin.backstage.common.constants.SecurityConstants;
 
 import java.util.Arrays;
 
@@ -30,7 +30,7 @@ import static java.util.Collections.singletonList;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder(){
@@ -44,12 +44,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(SecurityConstants.SWAGGER_WHITELIST).permitAll()
                 .antMatchers(HttpMethod.POST,SecurityConstants.SYSTEM_WHITELIST).permitAll()
+                .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(),redisTemplate), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint())
                 .accessDeniedHandler(new JwtAccessDeniedHandler());
+        http.headers().frameOptions().disable();
     }
 
     /**

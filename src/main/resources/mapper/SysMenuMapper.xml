@@ -20,10 +20,10 @@
         select
             sm.id, sm.parent_id, sm.name, sm.path, sm.perms, sm.type, sm.icon, sm.order_num, sm.hidden
         from fast_admin.sys_user su
-                 left join fast_admin.sys_user_role sur on su.id = sur.user_id
-                 left join fast_admin.sys_role sr on sur.role_id = sr.id
-                 left join fast_admin.sys_role_menu srm on sr.id = srm.role_id
-                 left join fast_admin.sys_menu sm on srm.menu_id = sm.id
+                 right join fast_admin.sys_user_role sur on su.id = sur.user_id
+                 right join fast_admin.sys_role sr on sur.role_id = sr.id
+                 right join fast_admin.sys_role_menu srm on sr.id = srm.role_id
+                 right join fast_admin.sys_menu sm on srm.menu_id = sm.id
         where su.id = #{userId}
     </select>
 

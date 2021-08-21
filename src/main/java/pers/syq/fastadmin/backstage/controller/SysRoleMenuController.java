@@ -24,8 +24,8 @@ public class SysRoleMenuController {
     @Autowired
     private SysRoleMenuService sysRoleMenuService;
 
-    @GetMapping
-    public R<PageUtils> list(@RequestParam Map<String, Object> params){
+    @GetMapping("/page")
+    public R<PageUtils> page(@RequestParam Map<String, Object> params){
         PageUtils page = sysRoleMenuService.queryPage(params);
         return R.ok(page);
     }
@@ -50,14 +50,9 @@ public class SysRoleMenuController {
 
 
     @DeleteMapping("/batch")
-    public R<?> deleteBatch(@RequestBody List<Long> ids){
+    public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
 		sysRoleMenuService.removeByIds(ids);
         return R.ok();
     }
 
-    @DeleteMapping("/{id}")
-    public R<?> deleteById(@PathVariable("id") Long id){
-        sysRoleMenuService.removeById(id);
-        return R.ok();
-    }
 }

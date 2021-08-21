@@ -1,9 +1,12 @@
 package pers.syq.fastadmin.backstage.common.utils;
 
-import lombok.Data;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class PageUtils implements Serializable {
@@ -33,6 +36,18 @@ public class PageUtils implements Serializable {
         this.pageSize = (int)page.getSize();
         this.currPage = (int)page.getCurrent();
         this.totalPage = (int)page.getPages();
+    }
+
+    public static <T> Page<T> getPage(Map<String, Object> params){
+        long curPage = 1;
+        long size = 10;
+        if(params.get("page") != null){
+            curPage = Long.parseLong((String)params.get("page"));
+        }
+        if(params.get("size") != null){
+            size = Long.parseLong((String)params.get("size"));
+        }
+        return new Page<>(curPage, size);
     }
 
 

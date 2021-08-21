@@ -1,4 +1,4 @@
-package pers.syq.fastadmin.backstage.filter;
+package pers.syq.fastadmin.backstage.common.filter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -19,9 +19,9 @@ import java.io.IOException;
 
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
-    private final RedisTemplate<String,Object> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager,RedisTemplate<String,Object> redisTemplate) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, RedisTemplate<String, Object> redisTemplate) {
         super(authenticationManager);
         this.redisTemplate = redisTemplate;
     }
@@ -37,7 +37,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         token = token.replace(SecurityConstants.TOKEN_PREFIX, "");
         UsernamePasswordAuthenticationToken authentication = null;
         try {
-            String previousToken = (String) redisTemplate.opsForValue().get(SecurityConstants.REDIS_TOKEN_PREFIX + JwtTokenUtils.getId(token));
+            String id = JwtTokenUtils.getId(token);
+            String previousToken = (String) redisTemplate.opsForValue().get(SecurityConstants.REDIS_TOKEN_PREFIX + id);
             if (!token.equals(previousToken)) {
                 SecurityContextHolder.clearContext();
                 chain.doFilter(request, response);

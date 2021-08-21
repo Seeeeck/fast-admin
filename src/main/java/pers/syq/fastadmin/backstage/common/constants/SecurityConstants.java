@@ -7,8 +7,12 @@ public final class SecurityConstants {
      * 角色的key
      **/
     public static final String PERMISSION_CLAIMS = "permission";
+    /**
+     * Token过期时间(分)
+     */
+    public static final long TOKEN_EXPIRATION = 24 * 60;
 
-    public static final long EXPIRATION =24 * 60 * 60L;
+    public static final String ADMIN_ROLE_NAME = "ROLE_ADMIN";
 
 
     /**
@@ -20,7 +24,7 @@ public final class SecurityConstants {
     public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
     public static final String TOKEN_TYPE = "JWT";
-    public static final String REDIS_TOKEN_PREFIX = "token:";
+    public static final String REDIS_TOKEN_PREFIX = "token";
 
     // Swagger WHITELIST
     public static final String[] SWAGGER_WHITELIST = {
@@ -37,9 +41,9 @@ public final class SecurityConstants {
 
     // System WHITELIST
     public static final String[] SYSTEM_WHITELIST = {
-            "sys/user/login",
-            "sys/user/logout",
-            "sys/captcha"
+            "/sys/user/login",
+            "/sys/user/logout",
+            "/sys/captcha"
     };
 
     private SecurityConstants() {

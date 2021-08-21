@@ -2,9 +2,11 @@ package pers.syq.fastadmin.backstage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.dto.LoginDTO;
+import pers.syq.fastadmin.backstage.dto.UserDTO;
 import pers.syq.fastadmin.backstage.entity.SysUserEntity;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.vo.UserInfoVO;
+import pers.syq.fastadmin.backstage.vo.UserRoleVO;
 
 import java.util.List;
 import java.util.Map;
@@ -22,10 +24,16 @@ public interface SysUserService extends IService<SysUserEntity> {
 
     List<String> listPermissionsByUserId(Long id);
 
-    UserInfoVO getUserInfo();
+    UserInfoVO getUserInfo(Long userId);
 
-    void logout();
+    void logout(Long id);
 
-    String getCurrentUserName();
+    UserRoleVO getUserRoleVO(Long id);
+
+    void saveUserDTO(UserDTO userDTO,Long id);
+
+    void updateUserDTO(UserDTO userDTO);
+
+    //String getCurrentUserName();
 }
 

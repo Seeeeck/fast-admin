@@ -12,4 +12,13 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
 
+    <select id="selectListByUserId" resultMap="sysRoleMap">
+        select
+            sr.id, sr.role_name, sr.remark, sr.create_user_id, sr.create_time
+        from fast_admin.sys_role sr
+            left join fast_admin.sys_user_role sur on sr.id = sur.role_id
+            left join fast_admin.sys_user su on sur.user_id = su.id
+        where su.id=#{userId}
+    </select>
+
 </mapper>

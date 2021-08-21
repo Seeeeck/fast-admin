@@ -3,7 +3,7 @@ package pers.syq.fastadmin.backstage.exception;
 import cn.hutool.json.JSONUtil;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
-import pers.syq.fastadmin.backstage.common.constants.WebConstants;
+import pers.syq.fastadmin.backstage.constants.WebConstants;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
 import pers.syq.fastadmin.backstage.common.utils.R;
 

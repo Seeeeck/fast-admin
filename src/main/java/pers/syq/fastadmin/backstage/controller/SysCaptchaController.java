@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pers.syq.fastadmin.backstage.common.utils.R;
+import pers.syq.fastadmin.backstage.constants.WebConstants;
 import pers.syq.fastadmin.backstage.vo.CaptchaVO;
 
 import java.util.concurrent.TimeUnit;
@@ -17,17 +18,17 @@ import java.util.concurrent.TimeUnit;
 public class SysCaptchaController {
 
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
 
     @PostMapping
     public R<CaptchaVO> captcha(){
-        SpecCaptcha specCaptcha = new SpecCaptcha(130, 48, 5);
+        SpecCaptcha specCaptcha = new SpecCaptcha(120, 45, 5);
         String key = IdUtil.fastUUID();
         String image = specCaptcha.toBase64();
         CaptchaVO captchaVO = new CaptchaVO();
         captchaVO.setKey(key);
         captchaVO.setImage(image);
-        redisTemplate.opsForValue().set(key,specCaptcha.text().toLowerCase(),10, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(key,specCaptcha.text().toLowerCase(), WebConstants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         return R.ok(captchaVO);
     }
 

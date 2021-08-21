@@ -1,6 +1,7 @@
 package pers.syq.fastadmin.backstage.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -52,10 +53,14 @@ public class ExceptionHandler {
     public R<?> handleBaseException(BaseException ex){
         return R.error(ex.getData()).errorCode(ex.getErrorCode());
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler({BadCredentialsException.class})
+    public R<?> handleBadCredentialsException(BadCredentialsException ex){
+        return R.error().msg(ex.getMessage()).code(401);
+    }
 
     @org.springframework.web.bind.annotation.ExceptionHandler({Exception.class})
     public R<?> handleException(Exception ex){
-        log.error(ex.toString());
+        ex.printStackTrace();
         HashMap<String, Object> map = new HashMap<>();
         map.put("cause",ex.getCause());
         return R.error(map).code(500).msg(ex.getMessage());

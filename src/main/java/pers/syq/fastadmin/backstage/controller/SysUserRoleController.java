@@ -24,8 +24,8 @@ public class SysUserRoleController {
     @Autowired
     private SysUserRoleService sysUserRoleService;
 
-    @GetMapping
-    public R<PageUtils> list(@RequestParam Map<String, Object> params){
+    @GetMapping("/page")
+    public R<PageUtils> page(@RequestParam Map<String, Object> params){
         PageUtils page = sysUserRoleService.queryPage(params);
         return R.ok(page);
     }
@@ -50,14 +50,9 @@ public class SysUserRoleController {
 
 
     @DeleteMapping("/batch")
-    public R<?> deleteBatch(@RequestBody List<Long> ids){
+    public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
 		sysUserRoleService.removeByIds(ids);
         return R.ok();
     }
 
-    @DeleteMapping("/{id}")
-    public R<?> deleteById(@PathVariable("id") Long id){
-        sysUserRoleService.removeById(id);
-        return R.ok();
-    }
 }

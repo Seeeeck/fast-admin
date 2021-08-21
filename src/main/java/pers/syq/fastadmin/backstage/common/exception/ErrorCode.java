@@ -6,9 +6,11 @@ public enum ErrorCode {
     FORBIDDEN(403,"Forbidden"),
     NOT_FOUND(404,"Not found"),
     INTERNAL_ERROR(500,"Internal error"),
-    VERIFY_JWT_FAILED(1001,"token验证失败"),
+    VERIFY_JWT_FAILED(1001, "Token verification failed"),
     TOKEN_EXPIRED(1002,"Token expired"),
-    CAPTCHA_VALID_EXCEPTION(1101,"Error captcha");
+    CAPTCHA_VALID_EXCEPTION(1101,"Error captcha"),
+    USERNAME_EXISTS_EXCEPTION(1201,"This username already exists"),
+    ILLEGAL_PASSWORD_EXCEPTION(1202,"Illegal password");
 
     private Integer code;
     private String msg;
