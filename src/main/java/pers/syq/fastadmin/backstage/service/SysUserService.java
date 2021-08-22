@@ -30,9 +30,11 @@ public interface SysUserService extends IService<SysUserEntity> {
 
     UserRoleVO getUserRoleVO(Long id);
 
-    void saveUserDTO(UserDTO userDTO,Long id);
+    void saveUserDTO(UserDTO userDTO);
 
     void updateUserDTO(UserDTO userDTO);
+
+    void removeBatch(List<Long> ids);
 
     //String getCurrentUserName();
 }

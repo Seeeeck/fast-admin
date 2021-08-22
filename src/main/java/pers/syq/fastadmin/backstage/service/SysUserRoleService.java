@@ -17,5 +17,9 @@ public interface SysUserRoleService extends IService<SysUserRoleEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     void saveUserRoles(List<Long> roleIdList, Long userId);
+
+    void removeByUserIds(List<Long> userIds);
+
+    void removeByRoleIds(List<Long> roleIds);
 }
 

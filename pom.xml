@@ -24,8 +24,18 @@
         <knife4j.version>3.0.2</knife4j.version>
         <easy-captcha.version>1.6.2</easy-captcha.version>
         <commons-pool2.version>2.10.0</commons-pool2.version>
+        <sensitive-core.version>0.0.13</sensitive-core.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>sensitive-core</artifactId>
+            <version>${sensitive-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
         <dependency>

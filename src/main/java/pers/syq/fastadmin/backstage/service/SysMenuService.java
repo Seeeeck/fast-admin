@@ -1,5 +1,6 @@
 package pers.syq.fastadmin.backstage.service;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
@@ -17,5 +18,11 @@ public interface SysMenuService extends IService<SysMenuEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     List<SysMenuEntity> listByUserId(Long userId);
+
+    List<Tree<Long>> listMenusForTree();
+
+    List<SysMenuEntity> listByRoleId(Long roleId);
+
+    void removeBatch(List<Long> ids);
 }
 

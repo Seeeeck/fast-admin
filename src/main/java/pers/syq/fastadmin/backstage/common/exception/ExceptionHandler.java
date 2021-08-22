@@ -40,6 +40,10 @@ public class ExceptionHandler {
         }
         return R.error(map).errorCode(ErrorCode.VALID_EXCEPTION);
     }
+    @org.springframework.web.bind.annotation.ExceptionHandler({IllegalArgumentException.class})
+    public R<?> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return R.error().errorCode(ErrorCode.VALID_EXCEPTION).msg(ex.getMessage());
+    }
 
 
     @org.springframework.web.bind.annotation.ExceptionHandler({MethodArgumentTypeMismatchException.class})

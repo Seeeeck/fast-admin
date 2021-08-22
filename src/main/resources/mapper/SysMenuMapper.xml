@@ -19,12 +19,24 @@
     <select id="selectListByUserId" resultMap="sysMenuMap">
         select
             sm.id, sm.parent_id, sm.name, sm.path, sm.perms, sm.type, sm.icon, sm.order_num, sm.hidden
-        from fast_admin.sys_user su
-                 right join fast_admin.sys_user_role sur on su.id = sur.user_id
-                 right join fast_admin.sys_role sr on sur.role_id = sr.id
-                 right join fast_admin.sys_role_menu srm on sr.id = srm.role_id
-                 right join fast_admin.sys_menu sm on srm.menu_id = sm.id
-        where su.id = #{userId}
+        from fast_admin.sys_menu sm
+        where sm.id in (
+            select
+                distinct srm.menu_id
+            from fast_admin.sys_role_menu srm
+                     left join fast_admin.sys_role sr on srm.role_id = sr.id
+                     left join fast_admin.sys_user_role sur on sr.id = sur.role_id
+                     left join fast_admin.sys_user su on sur.user_id = su.id
+            where sur.user_id = #{userId}
+        );
+    </select>
+
+    <select id="selectListByRoleId" resultMap="sysMenuMap">
+        select
+            sm.id, sm.parent_id, sm.name, sm.path, sm.perms, sm.type, sm.icon, sm.order_num, sm.hidden
+        from fast_admin.sys_menu sm
+                left join fast_admin.sys_role_menu srm on sm.id = srm.menu_id
+        where srm.role_id = #{roleId}
     </select>
 
 </mapper>

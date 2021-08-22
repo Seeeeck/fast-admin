@@ -1,5 +1,6 @@
 package pers.syq.fastadmin.backstage.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,15 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         this.saveBatch(userRoleEntities);
     }
 
+    @Override
+    public void removeByUserIds(List<Long> userIds) {
+        this.remove(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getUserId,userIds));
+    }
+
+    @Override
+    public void removeByRoleIds(List<Long> roleIds) {
+        this.remove(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getRoleId,roleIds));
+    }
 
 
 }

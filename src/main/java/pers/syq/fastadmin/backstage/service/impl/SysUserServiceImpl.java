@@ -17,6 +17,7 @@ import pers.syq.fastadmin.backstage.common.exception.BaseException;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
 import pers.syq.fastadmin.backstage.common.utils.JwtTokenUtils;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
+import pers.syq.fastadmin.backstage.common.utils.SecurityUtils;
 import pers.syq.fastadmin.backstage.constants.WebConstants;
 import pers.syq.fastadmin.backstage.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.dto.UserDTO;
@@ -124,7 +125,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         if (isAdmin(sysUserEntity.getId())){
             permissions.add(SecurityConstants.ADMIN_ROLE_NAME);
         }
-        userInfoVO.setPermissions(permissions);
+        HashSet<String> perms = new HashSet<>(permissions);
+        userInfoVO.setPermissions(perms);
         List<RouteVO> routeVOList = menus.stream().filter(menu -> menu.getParentId() == 0)
                 .sorted(Comparator.comparingInt(SysMenuEntity::getOrderNum))
                 .map(menu -> {
@@ -166,13 +168,13 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     }
     @Transactional
     @Override
-    public void saveUserDTO(UserDTO userDTO, Long id) {
+    public void saveUserDTO(UserDTO userDTO) {
         SysUserEntity existUser = this.getOne(new LambdaQueryWrapper<SysUserEntity>().eq(SysUserEntity::getUsername, userDTO.getUsername()));
         if (existUser != null){
             throw new BaseException(ErrorCode.USERNAME_EXISTS_EXCEPTION);
         }
         SysUserEntity userEntity = new SysUserEntity();
-        userEntity.setCreateUserId(id);
+        userEntity.setCreateUserId(SecurityUtils.getUserId().get());
         BeanUtil.copyProperties(userDTO,userEntity);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userEntity.setAvatar(WebConstants.DEFAULT_AVATAR);
@@ -200,6 +202,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         if (CollectionUtil.isNotEmpty(userDTO.getRoleIdList())){
             sysUserRoleService.saveUserRoles(userDTO.getRoleIdList(),userEntity.getId());
         }
+    }
+    @Transactional
+    @Override
+    public void removeBatch(List<Long> ids) {
+        this.removeByIds(ids);
+        sysUserRoleService.removeByUserIds(ids);
     }
 
 

@@ -16,4 +16,6 @@ import java.util.List;
 public interface SysMenuMapper extends BaseMapper<SysMenuEntity> {
 
     List<SysMenuEntity> selectListByUserId(Long userId);
+
+    List<SysMenuEntity> selectListByRoleId(Long roleId);
 }

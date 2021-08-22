@@ -1,5 +1,6 @@
 package pers.syq.fastadmin.backstage.controller;
 
+import cn.hutool.core.lang.tree.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,8 +60,14 @@ public class SysMenuController {
     @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
-		sysMenuService.removeByIds(ids);
+		sysMenuService.removeBatch(ids);
         return R.ok();
+    }
+
+    @GetMapping("/tree")
+    public R<?> listMenusForTree(){
+        List<Tree<Long>> tree = sysMenuService.listMenusForTree();
+        return R.ok(tree);
     }
 
 }

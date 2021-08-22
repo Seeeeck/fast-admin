@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,5 +15,13 @@ import java.util.Map;
  */
 public interface SysRoleMenuService extends IService<SysRoleMenuEntity> {
     PageUtils queryPage(Map<String, Object> params);
+
+    void saveRoleMenus(List<Long> menuIdList, Long roleId);
+
+    void removeByRoleId(Long roleId);
+
+    void removeByRoleIds(List<Long> roleIds);
+
+    void removeByMenuIds(List<Long> menuIds);
 }
 

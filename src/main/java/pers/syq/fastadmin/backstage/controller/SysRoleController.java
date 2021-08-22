@@ -1,11 +1,16 @@
 package pers.syq.fastadmin.backstage.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
+import pers.syq.fastadmin.backstage.common.utils.Save;
+import pers.syq.fastadmin.backstage.common.utils.Update;
+import pers.syq.fastadmin.backstage.dto.RoleDTO;
 import pers.syq.fastadmin.backstage.entity.SysRoleEntity;
 import pers.syq.fastadmin.backstage.service.SysRoleService;
+import pers.syq.fastadmin.backstage.vo.RoleMenuVO;
 
 import java.util.List;
 import java.util.Map;
@@ -42,22 +47,27 @@ public class SysRoleController {
     }
 
     @PostMapping
-    public R<?> save(@RequestBody SysRoleEntity sysRole){
-		sysRoleService.save(sysRole);
+    public R<?> save(@RequestBody @Validated(Save.class) RoleDTO roleDTO){
+		sysRoleService.saveRoleDTO(roleDTO);
         return R.ok();
     }
 
     @PutMapping
-    public R<?> update(@RequestBody SysRoleEntity sysRole){
-		sysRoleService.updateById(sysRole);
+    public R<?> update(@RequestBody @Validated(Update.class) RoleDTO roleDTO){
+		sysRoleService.updateRoleDTO(roleDTO);
         return R.ok();
     }
 
-
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
-		sysRoleService.removeByIds(ids);
+		sysRoleService.removeBatch(ids);
         return R.ok();
+    }
+
+    @GetMapping("/role_menu/{id}")
+    public R<RoleMenuVO> getRoleMenuVO(@PathVariable("id") Long id){
+        RoleMenuVO roleMenuVO = sysRoleService.getRoleMenuVO(id);
+        return R.ok(roleMenuVO);
     }
 
 

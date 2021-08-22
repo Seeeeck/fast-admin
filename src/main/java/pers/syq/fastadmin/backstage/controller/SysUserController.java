@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pers.syq.fastadmin.backstage.annotation.SysLog;
 import pers.syq.fastadmin.backstage.common.entity.AuthUser;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
@@ -56,11 +57,14 @@ public class SysUserController {
         return R.ok(userRoleVO);
     }
 
+    @SysLog("Create user")
     @PostMapping
-    public R<?> save(@RequestBody @Validated(Save.class) UserDTO userDTO,@AuthenticationPrincipal AuthUser authUser){
-		sysUserService.saveUserDTO(userDTO,authUser.getUserId());
+    public R<?> save(@RequestBody @Validated(Save.class) UserDTO userDTO){
+		sysUserService.saveUserDTO(userDTO);
         return R.ok();
     }
+
+    @SysLog("Update user")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','sys:user:update') or #authUser.userId == #userDTO.id")
     @PutMapping
     public R<?> update(@RequestBody @Validated(Update.class) UserDTO userDTO,@AuthenticationPrincipal AuthUser authUser){
@@ -68,10 +72,10 @@ public class SysUserController {
         return R.ok();
     }
 
-
+    @SysLog("Delete Users")
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
-		sysUserService.removeByIds(ids);
+		sysUserService.removeBatch(ids);
         return R.ok();
     }
 

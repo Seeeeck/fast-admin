@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
-import pers.syq.fastadmin.backstage.entity.SysLogEntity;
 import pers.syq.fastadmin.backstage.service.SysLogService;
 
 import java.util.List;
@@ -28,24 +27,6 @@ public class SysLogController {
     public R<PageUtils> page(@RequestParam Map<String, Object> params){
         PageUtils page = sysLogService.queryPage(params);
         return R.ok(page);
-    }
-
-    @GetMapping("/{id}")
-    public R<SysLogEntity> getById(@PathVariable("id") Long id){
-		SysLogEntity sysLog = sysLogService.getById(id);
-        return R.ok(sysLog);
-    }
-
-    @PostMapping
-    public R<?> save(@RequestBody SysLogEntity sysLog){
-		sysLogService.save(sysLog);
-        return R.ok();
-    }
-
-    @PutMapping
-    public R<?> update(@RequestBody SysLogEntity sysLog){
-		sysLogService.updateById(sysLog);
-        return R.ok();
     }
 
 
