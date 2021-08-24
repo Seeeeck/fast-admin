@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
+import pers.syq.fastadmin.backstage.entity.IdCountEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
 import pers.syq.fastadmin.backstage.mapper.SysRoleMenuMapper;
 import pers.syq.fastadmin.backstage.service.SysRoleMenuService;
@@ -42,6 +43,16 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     @Override
     public void removeByMenuIds(List<Long> menuIds) {
         this.remove(new LambdaQueryWrapper<SysRoleMenuEntity>().in(SysRoleMenuEntity::getMenuId,menuIds));
+    }
+
+    @Override
+    public void removeByMenuId(Long menuId) {
+        this.remove(new LambdaQueryWrapper<SysRoleMenuEntity>().eq(SysRoleMenuEntity::getMenuId,menuId));
+    }
+
+    @Override
+    public List<IdCountEntity> listIdCount(List<Long> peerMenuIds) {
+        return this.baseMapper.listIdCount(peerMenuIds);
     }
 
 }

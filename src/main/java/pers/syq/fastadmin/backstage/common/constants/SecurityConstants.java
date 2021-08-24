@@ -8,9 +8,14 @@ public final class SecurityConstants {
      **/
     public static final String PERMISSION_CLAIMS = "permission";
     /**
-     * Token过期时间(分)
+     * Token过期时间(s)
      */
-    public static final long TOKEN_EXPIRATION = 24 * 60;
+    public static final long TOKEN_EXPIRATION = 2 * 60 * 60;
+
+    /**
+     * Token刷新时间(s)
+     */
+    public static final long TOKEN_REFRESH_TIME = 60 * 60;
 
     public static final String ADMIN_ROLE_NAME = "ROLE_ADMIN";
 

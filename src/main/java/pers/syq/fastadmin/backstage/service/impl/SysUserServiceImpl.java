@@ -3,6 +3,7 @@ package pers.syq.fastadmin.backstage.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.constants.SecurityConstants;
 import pers.syq.fastadmin.backstage.common.exception.BaseException;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
-import pers.syq.fastadmin.backstage.common.utils.JwtTokenUtils;
-import pers.syq.fastadmin.backstage.common.utils.PageUtils;
-import pers.syq.fastadmin.backstage.common.utils.SecurityUtils;
+import pers.syq.fastadmin.backstage.common.utils.*;
 import pers.syq.fastadmin.backstage.constants.WebConstants;
 import pers.syq.fastadmin.backstage.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.dto.UserDTO;
@@ -58,8 +57,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         LambdaQueryWrapper<SysUserEntity> wrapper = new LambdaQueryWrapper<>();
-        Object username = params.get("username");
-        if (username != null){
+        String username = (String)params.get("username");
+        if (StrUtil.isNotBlank(username)){
             wrapper.like(SysUserEntity::getUsername,username);
         }
         IPage<SysUserEntity> page = this.page(PageUtils.getPage(params),wrapper);
@@ -90,7 +89,10 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
             permissions.add(SecurityConstants.ADMIN_ROLE_NAME);
         }
         String token = JwtTokenUtils.createToken(sysUser.getUsername(), String.valueOf(sysUser.getId()), permissions);
-        redisTemplate.opsForValue().set(SecurityConstants.REDIS_TOKEN_PREFIX + sysUser.getId().toString(),token,SecurityConstants.TOKEN_EXPIRATION, TimeUnit.MINUTES);
+        Long id = sysUser.getId();
+        String ipAddr = IPUtils.getIpAddr(HttpContextUtils.getHttpServletRequest());
+        String tokenKey = SecureUtil.md5(SecurityConstants.REDIS_TOKEN_PREFIX + id + ipAddr);
+        redisTemplate.opsForValue().set(tokenKey,token,SecurityConstants.TOKEN_EXPIRATION, TimeUnit.SECONDS);
         return SecurityConstants.TOKEN_PREFIX + token;
     }
 

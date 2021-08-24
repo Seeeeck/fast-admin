@@ -3,14 +3,14 @@ package pers.syq.fastadmin.backstage.controller;
 import cn.hutool.core.lang.tree.Tree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pers.syq.fastadmin.backstage.common.entity.AuthUser;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
 
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +22,7 @@ import java.util.Map;
  * @email sunyuqian0211@gmail.com
  * @date 2021-08-16
  */
+@Validated
 @RestController
 @RequestMapping("sys/menu")
 public class SysMenuController {
@@ -44,7 +45,7 @@ public class SysMenuController {
 
     @PreAuthorize("hasAnyAuthority('sys:menu:save','ROLE_ADMIN')")
     @PostMapping
-    public R<?> save(@RequestBody SysMenuEntity sysMenu, @AuthenticationPrincipal AuthUser user){
+    public R<?> save(@RequestBody SysMenuEntity sysMenu){
 		sysMenuService.save(sysMenu);
         return R.ok();
     }
@@ -57,17 +58,32 @@ public class SysMenuController {
     }
 
 
+//    @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
+//    @DeleteMapping("/batch")
+//    public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
+//		sysMenuService.removeBatch(ids);
+//        return R.ok();
+//    }
+
     @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
-    @DeleteMapping("/batch")
-    public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
-		sysMenuService.removeBatch(ids);
+    @DeleteMapping("/{id}")
+    public R<?> delete(@PathVariable("id") Long id){
+        sysMenuService.removeById(id);
         return R.ok();
     }
 
     @GetMapping("/tree")
-    public R<?> listMenusForTree(){
-        List<Tree<Long>> tree = sysMenuService.listMenusForTree();
+    public R<?> listMenusForTree(@RequestParam("op") @NotBlank String option,@RequestParam(value = "noButtonType",required = false) Boolean noButtonType){
+        List<Tree<Long>> tree = sysMenuService.listMenusForTree(option,noButtonType);
         return R.ok(tree);
     }
+
+    @PreAuthorize("hasAnyAuthority('sys:menu:get','ROLE_ADMIN')")
+    @GetMapping("/parent")
+    public R<SysMenuEntity> getParentMenuById(@RequestParam("id") Long id){
+        SysMenuEntity menu = sysMenuService.getParentById(id);
+        return R.ok(menu);
+    }
+
 
 }

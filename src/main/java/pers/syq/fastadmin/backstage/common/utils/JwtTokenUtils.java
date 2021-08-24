@@ -13,10 +13,7 @@ import pers.syq.fastadmin.backstage.common.entity.AuthUser;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * @author shuang.kou
- * @description JWT工具类
- */
+
 public class JwtTokenUtils {
 
     private static final String SECRET_KEY = SecurityConstants.JWT_SECRET_KEY;
@@ -24,7 +21,7 @@ public class JwtTokenUtils {
 
     public static String createToken(String username, String id, List<String> permissions) {
         final Date createdDate = new Date();
-        final Date expirationDate = new Date(createdDate.getTime() + SecurityConstants.TOKEN_EXPIRATION * 60 * 1000);
+        //final Date expirationDate = new Date(createdDate.getTime() + SecurityConstants.TOKEN_EXPIRATION * 60 * 1000);
         return Jwts.builder()
                 .setHeaderParam("type", SecurityConstants.TOKEN_TYPE)
                 .signWith(SignatureAlgorithm.HS256,SECRET_KEY)
@@ -33,7 +30,7 @@ public class JwtTokenUtils {
                 .setIssuer("FastAdmin")
                 .setIssuedAt(createdDate)
                 .setSubject(username)
-                .setExpiration(expirationDate)
+                //.setExpiration(expirationDate)
                 .compact();
     }
 

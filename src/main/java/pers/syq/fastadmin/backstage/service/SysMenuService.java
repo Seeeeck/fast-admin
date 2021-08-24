@@ -19,10 +19,12 @@ public interface SysMenuService extends IService<SysMenuEntity> {
 
     List<SysMenuEntity> listByUserId(Long userId);
 
-    List<Tree<Long>> listMenusForTree();
+    List<Tree<Long>> listMenusForTree(String option,Boolean noButtonType);
 
     List<SysMenuEntity> listByRoleId(Long roleId);
 
     void removeBatch(List<Long> ids);
+
+    SysMenuEntity getParentById(Long id);
 }
 

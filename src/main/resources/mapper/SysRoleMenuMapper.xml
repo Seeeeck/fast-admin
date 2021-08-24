@@ -9,5 +9,21 @@
         <result property="roleId" column="role_id"/>
         <result property="menuId" column="menu_id"/>
     </resultMap>
+    
+    <resultMap id="idCountMap" type="pers.syq.fastadmin.backstage.entity.IdCountEntity">
+        <result property="id" column="role_id"/>
+        <result property="count" column="count"/>
+    </resultMap>
+    
+    <select id="listIdCount" resultMap="idCountMap">
+        select 
+               srm.role_id,count(srm.role_id) count
+        from fast_admin.sys_role_menu srm
+        where srm.menu_id in 
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        group by srm.role_id
+    </select>
 
 </mapper>

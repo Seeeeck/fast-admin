@@ -2,6 +2,7 @@ package pers.syq.fastadmin.backstage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
+import pers.syq.fastadmin.backstage.entity.IdCountEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
 
 import java.util.List;
@@ -23,5 +24,9 @@ public interface SysRoleMenuService extends IService<SysRoleMenuEntity> {
     void removeByRoleIds(List<Long> roleIds);
 
     void removeByMenuIds(List<Long> menuIds);
+
+    void removeByMenuId(Long menuId);
+
+    List<IdCountEntity> listIdCount(List<Long> peerMenuIds);
 }
 
