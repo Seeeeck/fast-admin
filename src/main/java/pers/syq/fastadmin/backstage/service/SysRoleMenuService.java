@@ -15,7 +15,6 @@ import java.util.Map;
  * @date 2021-08-16
  */
 public interface SysRoleMenuService extends IService<SysRoleMenuEntity> {
-    PageUtils queryPage(Map<String, Object> params);
 
     void saveRoleMenus(List<Long> menuIdList, Long roleId);
 

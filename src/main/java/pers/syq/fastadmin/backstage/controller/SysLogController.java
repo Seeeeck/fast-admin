@@ -1,6 +1,7 @@
 package pers.syq.fastadmin.backstage.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
@@ -23,13 +24,14 @@ public class SysLogController {
     @Autowired
     private SysLogService sysLogService;
 
+    @PreAuthorize("hasAnyAuthority('sys:log:page','ROLE_ADMIN')")
     @GetMapping("/page")
     public R<PageUtils> page(@RequestParam Map<String, Object> params){
         PageUtils page = sysLogService.queryPage(params);
         return R.ok(page);
     }
 
-
+    @PreAuthorize("hasAnyAuthority('sys:log:delete','ROLE_ADMIN')")
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
 		sysLogService.removeByIds(ids);

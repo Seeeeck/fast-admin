@@ -38,12 +38,7 @@
                 left join fast_admin.sys_role_menu srm on sm.id = srm.menu_id
         where srm.role_id = #{roleId}
     </select>
-    <select id="selectPeerListById" resultMap="sysMenuMap">
-        select
-            sm.id, sm.parent_id, sm.name, sm.path, sm.perms, sm.type, sm.icon, sm.order_num, sm.hidden
-        from fast_admin.sys_menu sm
-        where sm.parent_id=(select sm.parent_id from fast_admin.sys_menu sm where sm.id = #{id})
-    </select>
+
     <select id="selectParentById" resultMap="sysMenuMap">
         select
             sm.id, sm.parent_id, sm.name, sm.path, sm.perms, sm.type, sm.icon, sm.order_num, sm.hidden

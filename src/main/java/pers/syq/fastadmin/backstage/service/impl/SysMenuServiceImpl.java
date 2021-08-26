@@ -7,7 +7,6 @@ import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.exception.BaseException;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
-import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.entity.IdCountEntity;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
@@ -26,7 +24,6 @@ import pers.syq.fastadmin.backstage.service.SysRoleMenuService;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -35,11 +32,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
     @Autowired
     private SysRoleMenuService roleMenuService;
 
-    @Override
-    public PageUtils queryPage(Map<String, Object> params) {
-        IPage<SysMenuEntity> page = this.page(PageUtils.getPage(params));
-        return new PageUtils(page);
-    }
 
     @Override
     public List<SysMenuEntity> listByUserId(Long userId) {
@@ -104,12 +96,6 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
         return this.baseMapper.selectListByRoleId(roleId);
     }
 
-    @Transactional
-    @Override
-    public void removeBatch(List<Long> ids) {
-        this.removeByIds(ids);
-        roleMenuService.removeByMenuIds(ids);
-    }
 
     @Override
     public SysMenuEntity getParentById(Long id) {
@@ -141,9 +127,5 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
         return SqlHelper.retBool(this.getBaseMapper().deleteById(id));
 
     }
-
-
-    private List<SysMenuEntity> listPeersById(Long id){
-        return this.baseMapper.selectPeerListById(id);
-    }
+    
 }

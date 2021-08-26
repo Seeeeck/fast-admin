@@ -39,18 +39,21 @@ public class SysUserController {
     @Autowired
     private SysUserService sysUserService;
 
+    @PreAuthorize("hasAnyAuthority('sys:user:page','ROLE_ADMIN')")
     @GetMapping("/page")
     public R<PageUtils> page(@RequestParam Map<String, Object> params){
         PageUtils page = sysUserService.queryPage(params);
         return R.ok(page);
     }
 
+    @PreAuthorize("hasAnyAuthority('sys:user:get','ROLE_ADMIN')")
     @GetMapping("/{id}")
     public R<SysUserEntity> getById(@PathVariable("id") Long id){
 		SysUserEntity sysUser = sysUserService.getById(id);
         return R.ok(sysUser);
     }
 
+    @PreAuthorize("hasAnyAuthority('sys:user:user_role','ROLE_ADMIN')")
     @GetMapping("/user_role/{id}")
     public R<UserRoleVO> getUserRoleVO(@PathVariable("id") Long id){
         UserRoleVO userRoleVO = sysUserService.getUserRoleVO(id);
@@ -58,6 +61,7 @@ public class SysUserController {
     }
 
     @SysLog("Create user")
+    @PreAuthorize("hasAnyAuthority('sys:user:save','ROLE_ADMIN')")
     @PostMapping
     public R<?> save(@RequestBody @Validated(Save.class) UserDTO userDTO){
 		sysUserService.saveUserDTO(userDTO);
@@ -65,7 +69,7 @@ public class SysUserController {
     }
 
     @SysLog("Update user")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','sys:user:update') or #authUser.userId == #userDTO.id")
+    @PreAuthorize("hasAnyAuthority('sys:user:update','ROLE_ADMIN') or #authUser.userId == #userDTO.id")
     @PutMapping
     public R<?> update(@RequestBody @Validated(Update.class) UserDTO userDTO,@AuthenticationPrincipal AuthUser authUser){
 		sysUserService.updateUserDTO(userDTO);
@@ -73,6 +77,7 @@ public class SysUserController {
     }
 
     @SysLog("Delete Users")
+    @PreAuthorize("hasAnyAuthority('sys:user:delete','ROLE_ADMIN')")
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
 		sysUserService.removeBatch(ids);

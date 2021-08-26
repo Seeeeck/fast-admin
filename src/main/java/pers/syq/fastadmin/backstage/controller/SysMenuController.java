@@ -5,14 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
 
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Map;
 
 
 
@@ -29,11 +27,11 @@ public class SysMenuController {
     @Autowired
     private SysMenuService sysMenuService;
 
-    @PreAuthorize("hasAnyAuthority('sys:menu:page','ROLE_ADMIN')")
-    @GetMapping("/page")
-    public R<PageUtils> page(@RequestParam Map<String, Object> params){
-        PageUtils page = sysMenuService.queryPage(params);
-        return R.ok(page);
+    @PreAuthorize("hasAnyAuthority('sys:menu:tree','ROLE_ADMIN')")
+    @GetMapping("/tree")
+    public R<?> listMenusForTree(@RequestParam("op") @NotBlank String option,@RequestParam(value = "noButtonType",required = false) Boolean noButtonType){
+        List<Tree<Long>> tree = sysMenuService.listMenusForTree(option,noButtonType);
+        return R.ok(tree);
     }
 
     @PreAuthorize("hasAnyAuthority('sys:menu:get','ROLE_ADMIN')")
@@ -57,14 +55,6 @@ public class SysMenuController {
         return R.ok();
     }
 
-
-//    @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
-//    @DeleteMapping("/batch")
-//    public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){
-//		sysMenuService.removeBatch(ids);
-//        return R.ok();
-//    }
-
     @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public R<?> delete(@PathVariable("id") Long id){
@@ -72,11 +62,6 @@ public class SysMenuController {
         return R.ok();
     }
 
-    @GetMapping("/tree")
-    public R<?> listMenusForTree(@RequestParam("op") @NotBlank String option,@RequestParam(value = "noButtonType",required = false) Boolean noButtonType){
-        List<Tree<Long>> tree = sysMenuService.listMenusForTree(option,noButtonType);
-        return R.ok(tree);
-    }
 
     @PreAuthorize("hasAnyAuthority('sys:menu:get','ROLE_ADMIN')")
     @GetMapping("/parent")

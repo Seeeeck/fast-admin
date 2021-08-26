@@ -1,10 +1,13 @@
 package pers.syq.fastadmin.backstage.common.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import pers.syq.fastadmin.backstage.common.utils.R;
@@ -17,10 +20,10 @@ import java.util.Set;
 
 @Slf4j
 @RestControllerAdvice
-public class ExceptionHandler {
+public class GlobalExceptionHandler {
 
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({BindException.class})
+    @ExceptionHandler({BindException.class})
     public R<?> handleBindExceptionException(BindException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         Map<String,Object> map = new HashMap<>();
@@ -30,7 +33,7 @@ public class ExceptionHandler {
         return R.error(map).errorCode(ErrorCode.VALID_EXCEPTION);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({ConstraintViolationException.class})
+    @ExceptionHandler({ConstraintViolationException.class})
     public R<?> handleConstraintViolationException(ConstraintViolationException ex) {
         Set<ConstraintViolation<?>> constraintViolations = ex.getConstraintViolations();
         HashMap<String,Object> map = new HashMap<>();
@@ -40,30 +43,35 @@ public class ExceptionHandler {
         }
         return R.error(map).errorCode(ErrorCode.VALID_EXCEPTION);
     }
-    @org.springframework.web.bind.annotation.ExceptionHandler({IllegalArgumentException.class})
+    @ExceptionHandler({IllegalArgumentException.class})
     public R<?> handleIllegalArgumentException(IllegalArgumentException ex) {
         return R.error().errorCode(ErrorCode.VALID_EXCEPTION).msg(ex.getMessage());
     }
 
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({MethodArgumentTypeMismatchException.class})
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public R<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex) {
         HashMap<String, Object> map = new HashMap<>();
         map.put(ex.getName(),"valid exception");
         return  R.error(map).errorCode(ErrorCode.VALID_EXCEPTION);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({BaseException.class})
+    @ExceptionHandler({BaseException.class})
     public R<?> handleBaseException(BaseException ex){
         return R.error(ex.getData()).errorCode(ex.getErrorCode());
     }
-    @org.springframework.web.bind.annotation.ExceptionHandler({BadCredentialsException.class})
+    @ExceptionHandler({BadCredentialsException.class})
     public R<?> handleBadCredentialsException(BadCredentialsException ex){
         return R.error().msg(ex.getMessage()).code(401);
     }
 
-    @org.springframework.web.bind.annotation.ExceptionHandler({Exception.class})
-    public R<?> handleException(Exception ex){
+    @ExceptionHandler({AccessDeniedException.class,AuthenticationException.class})
+    public void handleSecurityException(Exception ex) throws Exception {
+        throw ex;
+    }
+
+    @ExceptionHandler({Exception.class})
+    public R<?> handleException(Exception ex) {
         ex.printStackTrace();
         HashMap<String, Object> map = new HashMap<>();
         map.put("cause",ex.getCause());

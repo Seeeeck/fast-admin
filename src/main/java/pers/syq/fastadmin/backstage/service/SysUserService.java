@@ -36,6 +36,5 @@ public interface SysUserService extends IService<SysUserEntity> {
 
     void removeBatch(List<Long> ids);
 
-    //String getCurrentUserName();
 }
 

@@ -19,7 +19,5 @@ public interface SysMenuMapper extends BaseMapper<SysMenuEntity> {
 
     List<SysMenuEntity> selectListByRoleId(Long roleId);
 
-    List<SysMenuEntity> selectPeerListById(Long id);
-
     SysMenuEntity selectParentById(Long id);
 }

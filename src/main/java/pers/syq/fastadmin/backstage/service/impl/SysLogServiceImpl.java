@@ -1,6 +1,7 @@
 package pers.syq.fastadmin.backstage.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,12 @@ public class SysLogServiceImpl extends ServiceImpl<SysLogMapper, SysLogEntity> i
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
-        IPage<SysLogEntity> page = this.page(PageUtils.getPage(params), new QueryWrapper<>());
+        LambdaQueryWrapper<SysLogEntity> wrapper = new LambdaQueryWrapper<>();
+        String username = (String)params.get("username");
+        if (StrUtil.isNotBlank(username)){
+            wrapper.like(SysLogEntity::getUsername,username);
+        }
+        IPage<SysLogEntity> page = this.page(PageUtils.getPage(params), wrapper);
         return new PageUtils(page);
     }
 
