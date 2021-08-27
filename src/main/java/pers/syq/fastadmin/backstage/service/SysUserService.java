@@ -1,15 +1,16 @@
 package pers.syq.fastadmin.backstage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.dto.UserDTO;
 import pers.syq.fastadmin.backstage.entity.SysUserEntity;
-import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.vo.UserInfoVO;
 import pers.syq.fastadmin.backstage.vo.UserRoleVO;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  *
@@ -22,7 +23,7 @@ public interface SysUserService extends IService<SysUserEntity> {
 
     String login(LoginDTO loginDTO);
 
-    List<String> listPermissionsByUserId(Long id);
+    Set<String> listPermissionsByUserId(Long id);
 
     UserInfoVO getUserInfo(Long userId);
 
@@ -36,5 +37,8 @@ public interface SysUserService extends IService<SysUserEntity> {
 
     void removeBatch(List<Long> ids);
 
+    SysUserEntity getByUsername(String username);
+
+    boolean isLegalCaptchaCode(String redisCodeKey, String code);
 }
 

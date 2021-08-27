@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pers.syq.fastadmin.backstage.annotation.SysLog;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.common.utils.Save;
@@ -50,6 +51,7 @@ public class SysRoleController {
         return R.ok(sysRole);
     }
 
+    @SysLog("Create role")
     @PreAuthorize("hasAnyAuthority('sys:role:save','ROLE_ADMIN')")
     @PostMapping
     public R<?> save(@RequestBody @Validated(Save.class) RoleDTO roleDTO){
@@ -57,6 +59,7 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @SysLog("Update role")
     @PreAuthorize("hasAnyAuthority('sys:role:update','ROLE_ADMIN')")
     @PutMapping
     public R<?> update(@RequestBody @Validated(Update.class) RoleDTO roleDTO){
@@ -64,6 +67,7 @@ public class SysRoleController {
         return R.ok();
     }
 
+    @SysLog("Delete role")
     @PreAuthorize("hasAnyAuthority('sys:role:delete','ROLE_ADMIN')")
     @DeleteMapping("/batch")
     public R<?> deleteBatch(@RequestParam("ids") List<Long> ids){

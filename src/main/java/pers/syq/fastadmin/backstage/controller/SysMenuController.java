@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import pers.syq.fastadmin.backstage.annotation.SysLog;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
@@ -41,6 +42,7 @@ public class SysMenuController {
         return R.ok(sysMenu);
     }
 
+    @SysLog("Create menu")
     @PreAuthorize("hasAnyAuthority('sys:menu:save','ROLE_ADMIN')")
     @PostMapping
     public R<?> save(@RequestBody SysMenuEntity sysMenu){
@@ -48,6 +50,7 @@ public class SysMenuController {
         return R.ok();
     }
 
+    @SysLog("Update menu")
     @PreAuthorize("hasAnyAuthority('sys:menu:update','ROLE_ADMIN')")
     @PutMapping
     public R<?> update(@RequestBody SysMenuEntity sysMenu){
@@ -55,6 +58,7 @@ public class SysMenuController {
         return R.ok();
     }
 
+    @SysLog("Delete menu")
     @PreAuthorize("hasAnyAuthority('sys:menu:delete','ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public R<?> delete(@PathVariable("id") Long id){

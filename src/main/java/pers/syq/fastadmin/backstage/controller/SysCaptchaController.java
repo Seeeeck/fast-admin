@@ -3,11 +3,11 @@ package pers.syq.fastadmin.backstage.controller;
 import cn.hutool.core.util.IdUtil;
 import com.wf.captcha.SpecCaptcha;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import pers.syq.fastadmin.backstage.common.utils.R;
+import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
 import pers.syq.fastadmin.backstage.constants.WebConstants;
 import pers.syq.fastadmin.backstage.vo.CaptchaVO;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 public class SysCaptchaController {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisUtils redisUtils;
 
     @PostMapping
     public R<CaptchaVO> captcha(){
@@ -28,7 +28,7 @@ public class SysCaptchaController {
         CaptchaVO captchaVO = new CaptchaVO();
         captchaVO.setKey(key);
         captchaVO.setImage(image);
-        redisTemplate.opsForValue().set(key,specCaptcha.text().toLowerCase(), WebConstants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
+        redisUtils.set(key,specCaptcha.text().toLowerCase(), WebConstants.CAPTCHA_EXPIRATION, TimeUnit.MINUTES);
         return R.ok(captchaVO);
     }
 

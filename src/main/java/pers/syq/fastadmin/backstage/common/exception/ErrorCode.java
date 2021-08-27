@@ -10,7 +10,9 @@ public enum ErrorCode {
     TOKEN_EXPIRED(1002,"Token expired"),
     CAPTCHA_VALID_EXCEPTION(1101,"Error captcha"),
     USERNAME_EXISTS_EXCEPTION(1201,"This username already exists"),
-    ILLEGAL_PASSWORD_EXCEPTION(1202,"Illegal password");
+    ILLEGAL_PASSWORD_EXCEPTION(1202,"Illegal password"),
+    BAD_CREDENTIALS_PASSWORD(1203,"The username or password is not correct."),
+    BAD_CREDENTIALS_BANED(403,"User is forbidden to login");
 
     private Integer code;
     private String msg;

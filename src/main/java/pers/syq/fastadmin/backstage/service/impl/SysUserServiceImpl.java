@@ -3,20 +3,20 @@ package pers.syq.fastadmin.backstage.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.constants.SecurityConstants;
 import pers.syq.fastadmin.backstage.common.exception.BaseException;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
-import pers.syq.fastadmin.backstage.common.utils.*;
+import pers.syq.fastadmin.backstage.common.utils.JwtTokenUtils;
+import pers.syq.fastadmin.backstage.common.utils.PageUtils;
+import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
+import pers.syq.fastadmin.backstage.common.utils.SecurityUtils;
 import pers.syq.fastadmin.backstage.constants.WebConstants;
 import pers.syq.fastadmin.backstage.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.dto.UserDTO;
@@ -32,7 +32,6 @@ import pers.syq.fastadmin.backstage.service.SysUserService;
 import pers.syq.fastadmin.backstage.vo.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -46,7 +45,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     private SysMenuService sysMenuService;
 
     @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
+    private RedisUtils redisUtils;
 
     @Autowired
     private SysRoleService sysRoleService;
@@ -73,44 +72,59 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
 
     @Override
     public String login(LoginDTO loginDTO) {
-        String code = (String) redisTemplate.opsForValue().get(loginDTO.getKey());
-        if (StrUtil.isBlank(code) || !loginDTO.getCode().equalsIgnoreCase(code)){
-            throw new BaseException(ErrorCode.CAPTCHA_VALID_EXCEPTION);
-        }
-        SysUserEntity sysUser = this.getOne(new LambdaQueryWrapper<SysUserEntity>().eq(SysUserEntity::getUsername, loginDTO.getUsername()));
-        if (sysUser == null || !passwordEncoder.matches(loginDTO.getPassword(),sysUser.getPassword())){
-            throw new BadCredentialsException("The user name or password is not correct.");
-        }
-        if (!sysUser.getEnable()){
-            throw new BadCredentialsException("User is forbidden to login");
-        }
-        List<String> permissions = listPermissionsByUserId(sysUser.getId());
-        if (isAdmin(sysUser.getId())){
-            permissions.add(SecurityConstants.ADMIN_ROLE_NAME);
-        }
-        String token = JwtTokenUtils.createToken(sysUser.getUsername(), String.valueOf(sysUser.getId()), permissions);
-        Long id = sysUser.getId();
-        String ipAddr = IPUtils.getIpAddr(HttpContextUtils.getHttpServletRequest());
-        String tokenKey = SecureUtil.md5(SecurityConstants.REDIS_TOKEN_PREFIX + id + ipAddr);
-        redisTemplate.opsForValue().set(tokenKey,token,SecurityConstants.TOKEN_EXPIRATION, TimeUnit.SECONDS);
+        SysUserEntity sysUser = this.verifyAccount(loginDTO);
+        String token = this.generateToken(sysUser);
+        redisUtils.setToken(token,sysUser.getId());
         return SecurityConstants.TOKEN_PREFIX + token;
     }
 
-    @Override
-    public List<String> listPermissionsByUserId(Long id) {
-        List<SysMenuEntity> menus = sysMenuService.listByUserId(id);
-        if (CollectionUtil.isEmpty(menus)){
-            return new ArrayList<>();
+    private SysUserEntity verifyAccount(LoginDTO loginDTO){
+        if(!this.isLegalCaptchaCode(loginDTO.getKey(),loginDTO.getCode())){
+            throw new BaseException(ErrorCode.CAPTCHA_VALID_EXCEPTION);
         }
-        List<String> permissionList = menus.stream().map(SysMenuEntity::getPerms).collect(Collectors.toList());
-        return parsePermissions(permissionList);
+        SysUserEntity sysUser = this.getByUsername(loginDTO.getUsername());
+        if (sysUser == null || !passwordEncoder.matches(loginDTO.getPassword(),sysUser.getPassword())){
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS_PASSWORD);
+        }
+        if (!sysUser.getEnable()){
+            throw new BaseException(ErrorCode.BAD_CREDENTIALS_BANED);
+        }
+        return sysUser;
     }
 
-    private List<String> parsePermissions(List<String> permissionList){
-        List<String> permissions = new ArrayList<>();
-        for (String permissionsStr : permissionList) {
-            if (StrUtil.isNotBlank(permissionsStr)){
-                permissions.addAll(Arrays.asList(permissionsStr.split(",")));
+    @Override
+    public boolean isLegalCaptchaCode(String redisCodeKey, String code) {
+        String redisCode = redisUtils.getStringValue(redisCodeKey).orElse("");
+        return StrUtil.isNotEmpty(code) && redisCode.equalsIgnoreCase(code);
+    }
+
+    @Override
+    public SysUserEntity getByUsername(String username) {
+        return this.getOne(new LambdaQueryWrapper<SysUserEntity>().eq(SysUserEntity::getUsername, username));
+    }
+
+    private String generateToken(SysUserEntity sysUser) {
+        Set<String> permissions = listPermissionsByUserId(sysUser.getId());
+        return JwtTokenUtils.createToken(sysUser.getUsername(), String.valueOf(sysUser.getId()), permissions);
+    }
+
+
+    @Override
+    public Set<String> listPermissionsByUserId(Long id) {
+        List<SysMenuEntity> menus = sysMenuService.listByUserId(id);
+        Set<String> permissions = this.parsePermissions(menus);
+        if (isAdmin(id)){
+            permissions.add(SecurityConstants.ADMIN_ROLE_NAME);
+        }
+        return permissions;
+    }
+
+    private Set<String> parsePermissions(List<SysMenuEntity> menus){
+        Set<String> permissions = new HashSet<>();
+        for (SysMenuEntity menu : menus) {
+            String perms = menu.getPerms();
+            if (StrUtil.isNotEmpty(perms)){
+                permissions.addAll(Arrays.asList(perms.split(",")));
             }
         }
         return permissions;
@@ -123,19 +137,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         userInfoVO.setUsername(sysUserEntity.getUsername());
         userInfoVO.setAvatar(sysUserEntity.getAvatar());
         List<SysMenuEntity> menus = sysMenuService.listByUserId(sysUserEntity.getId());
-        List<String> permissions = parsePermissions(menus.stream().map(SysMenuEntity::getPerms).collect(Collectors.toList()));
+        Set<String> permissions = this.parsePermissions(menus);
         if (isAdmin(sysUserEntity.getId())){
             permissions.add(SecurityConstants.ADMIN_ROLE_NAME);
         }
-        HashSet<String> perms = new HashSet<>(permissions);
-        userInfoVO.setPermissions(perms);
-        List<RouteVO> routeVOList = menus.stream().filter(menu -> menu.getParentId() == 0)
-                .sorted(Comparator.comparingInt(SysMenuEntity::getOrderNum))
-                .map(menu -> {
-            RouteVO routeVO = generateRouteVO(menu);
-            routeVO.setChildren(generateRouteChildren(menu,menus));
-            return routeVO;
-        }).collect(Collectors.toList());
+        userInfoVO.setPermissions(permissions);
+        List<RouteVO> routeVOList = this.generateRouteVOList(menus);
         userInfoVO.setMenus(routeVOList);
         return userInfoVO;
     }
@@ -149,11 +156,55 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         }
         return false;
     }
+    private List<RouteVO> generateRouteVOList(Collection<SysMenuEntity> menus){
+        return menus.stream().filter(menu -> menu.getParentId() == 0)
+                .sorted(Comparator.comparingInt(SysMenuEntity::getOrderNum))
+                .map(menu -> {
+                    RouteVO routeVO = generateRouteVO(menu);
+                    routeVO.setChildren(generateRouteChildren(menu,menus));
+                    return routeVO;
+                }).collect(Collectors.toList());
+    }
+
+
+    private List<RouteVO> generateRouteChildren(SysMenuEntity target, Collection<SysMenuEntity> menus) {
+        return menus.stream().filter(menu -> menu.getParentId().equals(target.getId()) && menu.getType() == 1)
+                .sorted(Comparator.comparingInt(SysMenuEntity::getOrderNum))
+                .map(menu -> {
+                    RouteVO routeVO = generateRouteVO(menu);
+                    routeVO.setChildren(generateRouteChildren(menu,menus));
+                    return routeVO;
+                }).collect(Collectors.toList());
+    }
+
+    private RouteVO generateRouteVO(SysMenuEntity menu) {
+        RouteVO routeVO = new RouteVO();
+        BeanUtil.copyProperties(menu, routeVO);
+        String componentPath = this.generateComponentPath(menu);
+        routeVO.setComponent(componentPath);
+        RouteMetaVO routeMetaVO = new RouteMetaVO();
+        routeMetaVO.setTitle(menu.getName());
+        routeMetaVO.setIcon(menu.getIcon());
+        routeVO.setMeta(routeMetaVO);
+        return routeVO;
+    }
+
+    private String generateComponentPath(SysMenuEntity menu) {
+        if (menu.getParentId() == 0){
+            return  "Layout";
+        }else {
+            if (menu.getPath().endsWith("/")) {
+                return menu.getPath() + "index";
+            } else {
+                return menu.getPath() + "/index";
+            }
+        }
+    }
 
     @Override
     public void logout(Long id) {
         SysUserEntity sysUserEntity = this.getById(id);
-        redisTemplate.delete(SecurityConstants.REDIS_TOKEN_PREFIX +sysUserEntity.getId().toString());
+        redisUtils.delete(SecurityConstants.REDIS_TOKEN_PREFIX +sysUserEntity.getId().toString());
     }
 
     @Override
@@ -168,6 +219,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         }
         return userRoleVO;
     }
+
     @Transactional
     @Override
     public void saveUserDTO(UserDTO userDTO) {
@@ -181,8 +233,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         userEntity.setAvatar(WebConstants.DEFAULT_AVATAR);
         this.save(userEntity);
-        if (CollectionUtil.isNotEmpty(userDTO.getRoleIdList())){
-            sysUserRoleService.saveUserRoles(userDTO.getRoleIdList(),userEntity.getId());
+        if (CollectionUtil.isNotEmpty(userDTO.getRoleIds())){
+            sysUserRoleService.saveUserRoles(userDTO.getRoleIds(),userEntity.getId());
         }
     }
 
@@ -200,9 +252,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         }
         userEntity.setUsername(null);
         this.updateById(userEntity);
-        this.sysUserRoleService.remove(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userEntity.getId()));
-        if (CollectionUtil.isNotEmpty(userDTO.getRoleIdList())){
-            sysUserRoleService.saveUserRoles(userDTO.getRoleIdList(),userEntity.getId());
+        List<SysUserRoleEntity> userRoleEntities = sysUserRoleService.list(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userEntity.getId()));
+        Set<Long> roleIds = new HashSet<>();
+        for (SysUserRoleEntity userRoleEntity : userRoleEntities) {
+            roleIds.add(userRoleEntity.getRoleId());
+        }
+        Set<Long> dtoRoleIds = userDTO.getRoleIds();
+        if(!roleIds.equals(dtoRoleIds)){
+            System.out.println("1111111111111111111111111111");
+            redisUtils.deleteTokenByUserId(userEntity.getId());
+            sysUserRoleService.remove(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userEntity.getId()));
+            if (CollectionUtil.isNotEmpty(dtoRoleIds)){
+                sysUserRoleService.saveUserRoles(userDTO.getRoleIds(),userEntity.getId());
+            }
         }
     }
     @Transactional
@@ -211,40 +273,5 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         this.removeByIds(ids);
         sysUserRoleService.removeByUserIds(ids);
     }
-
-
-    private List<RouteVO> generateRouteChildren(SysMenuEntity target, List<SysMenuEntity> menus) {
-        return menus.stream().filter(menu -> menu.getParentId().equals(target.getId()) && menu.getType() == 1)
-                .sorted(Comparator.comparingInt(SysMenuEntity::getOrderNum))
-                .map(menu -> {
-                    RouteVO routeVO = generateRouteVO(menu);
-                    routeVO.setChildren(generateRouteChildren(menu,menus));
-                    return routeVO;
-                }).collect(Collectors.toList());
-    }
-
-    private RouteVO generateRouteVO(SysMenuEntity menu) {
-        RouteVO routeVO = new RouteVO();
-        BeanUtil.copyProperties(menu, routeVO);
-        String componentPath;
-        if (menu.getParentId() == 0){
-            componentPath = "Layout";
-        }else {
-            if (menu.getPath().endsWith("/")) {
-                componentPath = menu.getPath() + "index";
-            } else {
-                componentPath = menu.getPath() + "/index";
-            }
-        }
-        routeVO.setComponent(componentPath);
-        RouteMetaVO routeMetaVO = new RouteMetaVO();
-        routeMetaVO.setTitle(menu.getName());
-        routeMetaVO.setIcon(menu.getIcon());
-        routeVO.setMeta(routeMetaVO);
-        return routeVO;
-    }
-
-
-
 
 }

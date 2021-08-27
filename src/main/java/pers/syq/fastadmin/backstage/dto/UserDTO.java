@@ -10,7 +10,7 @@ import pers.syq.fastadmin.backstage.common.utils.Save;
 import pers.syq.fastadmin.backstage.common.utils.Update;
 
 import javax.validation.constraints.*;
-import java.util.List;
+import java.util.Set;
 
 @Data
 @SensitiveClass
@@ -31,6 +31,7 @@ public class UserDTO {
     private String mobile;
     @NotNull(groups = {Save.class,Update.class})
     private Boolean enable;
+
     //@Size(min=1,groups = {Save.class,Update.class})
-    private List<Long> roleIdList;
+    private Set<Long> roleIds;
 }

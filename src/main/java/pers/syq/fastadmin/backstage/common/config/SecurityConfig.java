@@ -2,7 +2,6 @@ package pers.syq.fastadmin.backstage.common.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,6 +17,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pers.syq.fastadmin.backstage.common.constants.SecurityConstants;
 import pers.syq.fastadmin.backstage.common.filter.JwtAuthorizationFilter;
+import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
 import pers.syq.fastadmin.backstage.exception.JwtAccessDeniedHandler;
 import pers.syq.fastadmin.backstage.exception.JwtAuthenticationEntryPoint;
 
@@ -30,7 +30,7 @@ import static java.util.Collections.singletonList;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisUtils redisUtils;
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder(){
@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(),redisTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(authenticationManager(),redisUtils), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .exceptionHandling().accessDeniedHandler(new JwtAccessDeniedHandler()).and()
                 .exceptionHandling().authenticationEntryPoint(new JwtAuthenticationEntryPoint());

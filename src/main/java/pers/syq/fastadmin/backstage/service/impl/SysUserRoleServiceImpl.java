@@ -7,6 +7,7 @@ import pers.syq.fastadmin.backstage.entity.SysUserRoleEntity;
 import pers.syq.fastadmin.backstage.mapper.SysUserRoleMapper;
 import pers.syq.fastadmin.backstage.service.SysUserRoleService;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUserRoleEntity> implements SysUserRoleService {
 
     @Override
-    public void saveUserRoles(List<Long> roleIdList, Long userId) {
+    public void saveUserRoles(Collection<Long> roleIdList, Long userId) {
         List<SysUserRoleEntity> userRoleEntities = roleIdList.stream().map(roleId -> {
             SysUserRoleEntity entity = new SysUserRoleEntity();
             entity.setUserId(userId);
@@ -26,12 +27,12 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
     }
 
     @Override
-    public void removeByUserIds(List<Long> userIds) {
+    public void removeByUserIds(Collection<Long> userIds) {
         this.remove(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getUserId,userIds));
     }
 
     @Override
-    public void removeByRoleIds(List<Long> roleIds) {
+    public void removeByRoleIds(Collection<Long> roleIds) {
         this.remove(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getRoleId,roleIds));
     }
 

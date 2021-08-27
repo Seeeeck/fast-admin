@@ -8,6 +8,7 @@ import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
 import pers.syq.fastadmin.backstage.mapper.SysRoleMenuMapper;
 import pers.syq.fastadmin.backstage.service.SysRoleMenuService;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRoleMenuEntity> implements SysRoleMenuService {
 
     @Override
-    public void saveRoleMenus(List<Long> menuIdList, Long roleId) {
+    public void saveRoleMenus(Collection<Long> menuIdList, Long roleId) {
         List<SysRoleMenuEntity> entities = menuIdList.stream().map(menuId -> new SysRoleMenuEntity(null, roleId, menuId)).collect(Collectors.toList());
         this.saveBatch(entities);
     }
@@ -27,12 +28,12 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
     }
 
     @Override
-    public void removeByRoleIds(List<Long> roleIds) {
+    public void removeByRoleIds(Collection<Long> roleIds) {
         this.remove(new LambdaQueryWrapper<SysRoleMenuEntity>().in(SysRoleMenuEntity::getRoleId,roleIds));
     }
 
     @Override
-    public void removeByMenuIds(List<Long> menuIds) {
+    public void removeByMenuIds(Collection<Long> menuIds) {
         this.remove(new LambdaQueryWrapper<SysRoleMenuEntity>().in(SysRoleMenuEntity::getMenuId,menuIds));
     }
 

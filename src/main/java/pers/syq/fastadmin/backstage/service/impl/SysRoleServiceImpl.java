@@ -10,10 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
+import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
 import pers.syq.fastadmin.backstage.common.utils.SecurityUtils;
 import pers.syq.fastadmin.backstage.dto.RoleDTO;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleEntity;
+import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
+import pers.syq.fastadmin.backstage.entity.SysUserRoleEntity;
 import pers.syq.fastadmin.backstage.mapper.SysRoleMapper;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
 import pers.syq.fastadmin.backstage.service.SysRoleMenuService;
@@ -21,8 +24,10 @@ import pers.syq.fastadmin.backstage.service.SysRoleService;
 import pers.syq.fastadmin.backstage.service.SysUserRoleService;
 import pers.syq.fastadmin.backstage.vo.RoleMenuVO;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -37,6 +42,9 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
 
     @Autowired
     private SysUserRoleService userRoleService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -61,7 +69,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
         BeanUtil.copyProperties(roleDTO,roleEntity);
         SecurityUtils.getUserId().ifPresent(roleEntity::setCreateUserId);
         this.save(roleEntity);
-        List<Long> menuIdList = roleDTO.getMenuIdList();
+        Set<Long> menuIdList = roleDTO.getMenuIds();
         if (CollectionUtil.isNotEmpty(menuIdList)){
             roleMenuService.saveRoleMenus(menuIdList,roleEntity.getId());
         }
@@ -73,12 +81,22 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
         SysRoleEntity roleEntity = new SysRoleEntity();
         BeanUtil.copyProperties(roleDTO,roleEntity);
         this.updateById(roleEntity);
-        roleMenuService.removeByRoleId(roleDTO.getId());
-        List<Long> menuIdList = roleDTO.getMenuIdList();
-        if (CollectionUtil.isNotEmpty(menuIdList)){
-            roleMenuService.saveRoleMenus(menuIdList,roleEntity.getId());
+        List<SysRoleMenuEntity> roleMenuEntities = roleMenuService.list(new LambdaQueryWrapper<SysRoleMenuEntity>().eq(SysRoleMenuEntity::getRoleId, roleEntity.getId()));
+        HashSet<Long> menuIds = new HashSet<>();
+        for (SysRoleMenuEntity roleMenuEntity : roleMenuEntities) {
+            menuIds.add(roleMenuEntity.getMenuId());
         }
-
+        Set<Long> dtoMenuIds = roleDTO.getMenuIds();
+        if(!menuIds.equals(dtoMenuIds)){
+            List<Long> userIds = userRoleService
+                    .list(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getRoleId, roleEntity.getId()))
+                    .stream().map(SysUserRoleEntity::getUserId).collect(Collectors.toList());
+            redisUtils.deleteTokenByUserIds(userIds);
+            roleMenuService.removeByRoleId(roleDTO.getId());
+            if (CollectionUtil.isNotEmpty(dtoMenuIds)){
+                roleMenuService.saveRoleMenus(dtoMenuIds,roleEntity.getId());
+            }
+        }
     }
 
     @Override
@@ -94,10 +112,15 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
         return roleMenuVO;
     }
 
+
     @Transactional
     @Override
     public void removeBatch(List<Long> ids) {
         this.removeByIds(ids);
+        List<Long> userIds = userRoleService
+                .list(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getRoleId, ids))
+                .stream().map(SysUserRoleEntity::getUserId).collect(Collectors.toList());
+        redisUtils.deleteTokenByUserIds(userIds);
         roleMenuService.removeByRoleIds(ids);
         userRoleService.removeByRoleIds(ids);
     }
