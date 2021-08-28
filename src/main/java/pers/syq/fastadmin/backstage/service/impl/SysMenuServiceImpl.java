@@ -1,10 +1,12 @@
 package pers.syq.fastadmin.backstage.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNode;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
@@ -13,12 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.exception.BaseException;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
+import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
+import pers.syq.fastadmin.backstage.dto.MenuDTO;
 import pers.syq.fastadmin.backstage.entity.IdCountEntity;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
 import pers.syq.fastadmin.backstage.mapper.SysMenuMapper;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
 import pers.syq.fastadmin.backstage.service.SysRoleMenuService;
+import pers.syq.fastadmin.backstage.service.SysUserRoleService;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -32,6 +37,12 @@ import java.util.stream.Collectors;
 public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity> implements SysMenuService {
     @Autowired
     private SysRoleMenuService roleMenuService;
+
+    @Autowired
+    private SysUserRoleService userRoleService;
+
+    @Autowired
+    private RedisUtils redisUtils;
 
 
     @Override
@@ -107,6 +118,43 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
         return this.baseMapper.selectParentById(id);
     }
 
+
+    @Override
+    public void saveDTO(MenuDTO menuDTO) {
+        Integer type = menuDTO.getType();
+        SysMenuEntity menuEntity = new SysMenuEntity();
+        BeanUtil.copyProperties(menuDTO,menuEntity);
+        if (type == 0 || type == 1){
+            if (StrUtil.isBlank(menuDTO.getPath())){
+                throw new BaseException(ErrorCode.VALID_EXCEPTION);
+            }
+            menuEntity.setPerms(null);
+        }
+        this.save(menuEntity);
+    }
+
+    @Override
+    public void updateDTO(MenuDTO menuDTO) {
+        Integer type = menuDTO.getType();
+        SysMenuEntity menuEntity = new SysMenuEntity();
+        BeanUtil.copyProperties(menuDTO,menuEntity);
+        if (type == 0 || type == 1){
+            if (StrUtil.isBlank(menuDTO.getPath())){
+                throw new BaseException(ErrorCode.VALID_EXCEPTION);
+            }
+            menuEntity.setPerms(null);
+        }else {
+            SysMenuEntity entity = this.getById(menuDTO.getId());
+            if (!entity.getPerms().equals(menuDTO.getPerms())){
+                List<Long> userIds = userRoleService.listUserIdsByMenuId(entity.getId());
+                if (!userIds.isEmpty()){
+                    redisUtils.deleteTokenByUserIds(userIds);
+                }
+            }
+        }
+        this.updateById(menuEntity);
+    }
+
     //TODO check
     @Transactional
     @Override
@@ -130,6 +178,11 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenuEntity
                 roleMenuService.remove(new LambdaQueryWrapper<SysRoleMenuEntity>()
                         .eq(SysRoleMenuEntity::getMenuId,menuEntity.getParentId())
                         .in(SysRoleMenuEntity::getRoleId,roleIdList));
+            }
+        } else if (menuEntity.getType() == 2){
+            List<Long> userIds = userRoleService.listUserIdsByMenuId(menuEntity.getId());
+            if (!userIds.isEmpty()){
+                redisUtils.deleteTokenByUserIds(userIds);
             }
         }
         roleMenuService.removeByMenuId(menuId);

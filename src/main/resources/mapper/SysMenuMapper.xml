@@ -24,9 +24,7 @@
             select
                 distinct srm.menu_id
             from fast_admin.sys_role_menu srm
-                     left join fast_admin.sys_role sr on srm.role_id = sr.id
-                     left join fast_admin.sys_user_role sur on sr.id = sur.role_id
-                     left join fast_admin.sys_user su on sur.user_id = su.id
+                     left join fast_admin.sys_user_role sur on srm.role_id = sur.role_id
             where sur.user_id = #{userId}
         );
     </select>

@@ -2,6 +2,7 @@ package pers.syq.fastadmin.backstage.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
+import pers.syq.fastadmin.backstage.dto.MenuDTO;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 
 import java.util.List;
@@ -21,5 +22,9 @@ public interface SysMenuService extends IService<SysMenuEntity> {
     List<SysMenuEntity> listByRoleId(Long roleId);
 
     SysMenuEntity getParentById(Long id);
+
+    void saveDTO(MenuDTO menuDTO);
+
+    void updateDTO(MenuDTO menuDTO);
 }
 

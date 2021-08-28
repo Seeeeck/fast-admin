@@ -9,5 +9,12 @@
         <result property="userId" column="user_id"/>
         <result property="roleId" column="role_id"/>
     </resultMap>
+    <select id="selectUserIdsByMenuId" resultType="java.lang.Long">
+        select
+            distinct sur.user_id
+        from fast_admin.sys_user_role sur
+        left join fast_admin.sys_role_menu srm on sur.role_id = sur.role_id
+        where srm.menu_id=#{menuId}
+    </select>
 
 </mapper>

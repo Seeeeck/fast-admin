@@ -259,7 +259,6 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         }
         Set<Long> dtoRoleIds = userDTO.getRoleIds();
         if(!roleIds.equals(dtoRoleIds)){
-            System.out.println("1111111111111111111111111111");
             redisUtils.deleteTokenByUserId(userEntity.getId());
             sysUserRoleService.remove(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userEntity.getId()));
             if (CollectionUtil.isNotEmpty(dtoRoleIds)){

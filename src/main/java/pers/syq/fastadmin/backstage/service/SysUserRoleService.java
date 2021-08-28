@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.entity.SysUserRoleEntity;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -18,5 +19,7 @@ public interface SysUserRoleService extends IService<SysUserRoleEntity> {
     void removeByUserIds(Collection<Long> userIds);
 
     void removeByRoleIds(Collection<Long> roleIds);
+
+    List<Long> listUserIdsByMenuId(Long menuId);
 }
 

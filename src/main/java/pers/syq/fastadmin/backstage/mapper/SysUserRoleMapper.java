@@ -4,6 +4,8 @@ import pers.syq.fastadmin.backstage.entity.SysUserRoleEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.util.List;
+
 /**
  *
  * @author syq
@@ -13,4 +15,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface SysUserRoleMapper extends BaseMapper<SysUserRoleEntity> {
 
+    List<Long> selectUserIdsByMenuId(Long menuId);
 }

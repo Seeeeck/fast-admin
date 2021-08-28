@@ -7,6 +7,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pers.syq.fastadmin.backstage.annotation.SysLog;
 import pers.syq.fastadmin.backstage.common.utils.R;
+import pers.syq.fastadmin.backstage.common.utils.Save;
+import pers.syq.fastadmin.backstage.common.utils.Update;
+import pers.syq.fastadmin.backstage.dto.MenuDTO;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
 
@@ -45,16 +48,16 @@ public class SysMenuController {
     @SysLog("Create menu")
     @PreAuthorize("hasAnyAuthority('sys:menu:save','ROLE_ADMIN')")
     @PostMapping
-    public R<?> save(@RequestBody SysMenuEntity sysMenu){
-		sysMenuService.save(sysMenu);
+    public R<?> save(@RequestBody @Validated(Save.class) MenuDTO menuDTO){
+		sysMenuService.saveDTO(menuDTO);
         return R.ok();
     }
 
     @SysLog("Update menu")
     @PreAuthorize("hasAnyAuthority('sys:menu:update','ROLE_ADMIN')")
     @PutMapping
-    public R<?> update(@RequestBody SysMenuEntity sysMenu){
-		sysMenuService.updateById(sysMenu);
+    public R<?> update(@RequestBody @Validated(Update.class) MenuDTO menuDTO){
+		sysMenuService.updateDTO(menuDTO);
         return R.ok();
     }
 
