@@ -9,7 +9,7 @@ import pers.syq.fastadmin.backstage.annotation.SysLog;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.common.utils.Save;
 import pers.syq.fastadmin.backstage.common.utils.Update;
-import pers.syq.fastadmin.backstage.dto.MenuDTO;
+import pers.syq.fastadmin.backstage.entity.dto.MenuDTO;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
 

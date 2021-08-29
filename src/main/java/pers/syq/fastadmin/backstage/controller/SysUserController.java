@@ -12,13 +12,13 @@ import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.common.utils.Save;
 import pers.syq.fastadmin.backstage.common.utils.Update;
-import pers.syq.fastadmin.backstage.dto.LoginDTO;
-import pers.syq.fastadmin.backstage.dto.UserDTO;
+import pers.syq.fastadmin.backstage.entity.dto.LoginDTO;
+import pers.syq.fastadmin.backstage.entity.dto.UserDTO;
 import pers.syq.fastadmin.backstage.entity.SysUserEntity;
 import pers.syq.fastadmin.backstage.service.SysUserService;
-import pers.syq.fastadmin.backstage.vo.LoginVO;
-import pers.syq.fastadmin.backstage.vo.UserInfoVO;
-import pers.syq.fastadmin.backstage.vo.UserRoleVO;
+import pers.syq.fastadmin.backstage.entity.vo.LoginVO;
+import pers.syq.fastadmin.backstage.entity.vo.UserInfoVO;
+import pers.syq.fastadmin.backstage.entity.vo.UserRoleVO;
 
 import javax.validation.Valid;
 import java.util.List;

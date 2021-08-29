@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.exception.BaseException;
 import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
 import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
-import pers.syq.fastadmin.backstage.dto.MenuDTO;
+import pers.syq.fastadmin.backstage.entity.dto.MenuDTO;
 import pers.syq.fastadmin.backstage.entity.IdCountEntity;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;

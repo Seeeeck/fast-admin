@@ -1,11 +1,11 @@
-package pers.syq.fastadmin.backstage.vo;
+package pers.syq.fastadmin.backstage.entity.vo;
 
 import lombok.Data;
 
-import java.util.List;
+import java.util.Date;
 
 @Data
-public class UserRoleVO {
+public class UserVO {
     private Long id;
 
     /**
@@ -31,6 +31,8 @@ public class UserRoleVO {
      */
     private Boolean enable;
 
-    private List<Long> roleIdList;
-
+    /**
+     * 创建时间
+     */
+    private Date createTime;
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
 import pers.syq.fastadmin.backstage.constants.WebConstants;
-import pers.syq.fastadmin.backstage.vo.CaptchaVO;
+import pers.syq.fastadmin.backstage.entity.vo.CaptchaVO;
 
 import java.util.concurrent.TimeUnit;
 

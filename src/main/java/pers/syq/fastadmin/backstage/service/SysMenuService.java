@@ -2,7 +2,7 @@ package pers.syq.fastadmin.backstage.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.extension.service.IService;
-import pers.syq.fastadmin.backstage.dto.MenuDTO;
+import pers.syq.fastadmin.backstage.entity.dto.MenuDTO;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 
 import java.util.List;

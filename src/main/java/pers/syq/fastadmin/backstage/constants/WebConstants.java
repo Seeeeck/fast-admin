@@ -10,4 +10,25 @@ public class WebConstants {
     public static final String DEFAULT_AVATAR = "http://img.72qq.com/file/202102/22/a99922af3c.jpg";
 
     private WebConstants(){}
+
+    public static enum ScheduleStatus{
+        /**
+         * 正常
+         */
+        NORMAL(0),
+        /**
+         * 暂停
+         */
+        PAUSE(1);
+
+        private int value;
+
+        ScheduleStatus(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+    }
 }

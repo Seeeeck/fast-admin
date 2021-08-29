@@ -9,10 +9,10 @@ import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.R;
 import pers.syq.fastadmin.backstage.common.utils.Save;
 import pers.syq.fastadmin.backstage.common.utils.Update;
-import pers.syq.fastadmin.backstage.dto.RoleDTO;
+import pers.syq.fastadmin.backstage.entity.dto.RoleDTO;
 import pers.syq.fastadmin.backstage.entity.SysRoleEntity;
 import pers.syq.fastadmin.backstage.service.SysRoleService;
-import pers.syq.fastadmin.backstage.vo.RoleMenuVO;
+import pers.syq.fastadmin.backstage.entity.vo.RoleMenuVO;
 
 import java.util.List;
 import java.util.Map;

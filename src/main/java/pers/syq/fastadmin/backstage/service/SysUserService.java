@@ -2,11 +2,11 @@ package pers.syq.fastadmin.backstage.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
-import pers.syq.fastadmin.backstage.dto.LoginDTO;
-import pers.syq.fastadmin.backstage.dto.UserDTO;
+import pers.syq.fastadmin.backstage.entity.dto.LoginDTO;
+import pers.syq.fastadmin.backstage.entity.dto.UserDTO;
 import pers.syq.fastadmin.backstage.entity.SysUserEntity;
-import pers.syq.fastadmin.backstage.vo.UserInfoVO;
-import pers.syq.fastadmin.backstage.vo.UserRoleVO;
+import pers.syq.fastadmin.backstage.entity.vo.UserInfoVO;
+import pers.syq.fastadmin.backstage.entity.vo.UserRoleVO;
 
 import java.util.List;
 import java.util.Map;

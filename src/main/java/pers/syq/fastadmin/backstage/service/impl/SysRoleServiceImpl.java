@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
 import pers.syq.fastadmin.backstage.common.utils.SecurityUtils;
-import pers.syq.fastadmin.backstage.dto.RoleDTO;
+import pers.syq.fastadmin.backstage.entity.dto.RoleDTO;
 import pers.syq.fastadmin.backstage.entity.SysMenuEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleEntity;
 import pers.syq.fastadmin.backstage.entity.SysRoleMenuEntity;
@@ -22,7 +22,7 @@ import pers.syq.fastadmin.backstage.service.SysMenuService;
 import pers.syq.fastadmin.backstage.service.SysRoleMenuService;
 import pers.syq.fastadmin.backstage.service.SysRoleService;
 import pers.syq.fastadmin.backstage.service.SysUserRoleService;
-import pers.syq.fastadmin.backstage.vo.RoleMenuVO;
+import pers.syq.fastadmin.backstage.entity.vo.RoleMenuVO;
 
 import java.util.HashSet;
 import java.util.List;

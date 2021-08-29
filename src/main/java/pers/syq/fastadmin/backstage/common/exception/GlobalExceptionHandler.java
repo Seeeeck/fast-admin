@@ -70,6 +70,7 @@ public class GlobalExceptionHandler {
         throw ex;
     }
 
+
     @ExceptionHandler({Exception.class})
     public R<?> handleException(Exception ex) {
         ex.printStackTrace();

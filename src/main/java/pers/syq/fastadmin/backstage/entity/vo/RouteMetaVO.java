@@ -1,4 +1,4 @@
-package pers.syq.fastadmin.backstage.vo;
+package pers.syq.fastadmin.backstage.entity.vo;
 
 import lombok.Data;
 
