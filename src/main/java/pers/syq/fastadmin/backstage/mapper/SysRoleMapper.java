@@ -17,5 +17,6 @@ public interface SysRoleMapper extends BaseMapper<SysRoleEntity> {
 
     List<SysRoleEntity> selectListByUserId(Long userId);
 
-    int selectCuntAdminByUserId(Long userId);
+    int selectCountAdminByUserId(Long userId);
+
 }

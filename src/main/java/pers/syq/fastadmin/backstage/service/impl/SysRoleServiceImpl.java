@@ -127,7 +127,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
 
     @Override
     public int countAdminByUserId(Long userId) {
-        return this.baseMapper.selectCuntAdminByUserId(userId);
+        return this.baseMapper.selectCountAdminByUserId(userId);
     }
 
 

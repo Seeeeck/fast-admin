@@ -19,7 +19,7 @@
             left join fast_admin.sys_user_role sur on sr.id = sur.role_id
         where sur.user_id=#{userId}
     </select>
-    <select id="selectCuntAdminByUserId" resultType="java.lang.Integer">
+    <select id="selectCountAdminByUserId" resultType="java.lang.Integer">
         select
             count(1)
         from fast_admin.sys_role sr
