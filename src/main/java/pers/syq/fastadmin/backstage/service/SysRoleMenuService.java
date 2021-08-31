@@ -26,5 +26,7 @@ public interface SysRoleMenuService extends IService<SysRoleMenuEntity> {
     void removeByMenuId(Long menuId);
 
     List<IdCountEntity> listIdCount(List<Long> peerMenuIds);
+
+    List<SysRoleMenuEntity> listByRoleId(Long roleId);
 }
 

@@ -27,5 +27,7 @@ public interface SysRoleService extends IService<SysRoleEntity> {
     RoleMenuVO getRoleMenuVO(Long id);
 
     void removeBatch(List<Long> ids);
+
+    int countAdminByUserId(Long userId);
 }
 

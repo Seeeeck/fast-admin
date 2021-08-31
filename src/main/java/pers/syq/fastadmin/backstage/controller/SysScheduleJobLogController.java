@@ -22,7 +22,7 @@ import java.util.Map;
  * @date 2021-08-29
  */
 @RestController
-@RequestMapping("sys/scheduleLog")
+@RequestMapping("sys/schedule-log")
 public class SysScheduleJobLogController {
     @Autowired
     private SysScheduleJobLogService sysScheduleJobLogService;

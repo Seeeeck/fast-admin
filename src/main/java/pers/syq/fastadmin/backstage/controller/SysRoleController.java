@@ -75,8 +75,8 @@ public class SysRoleController {
         return R.ok();
     }
 
-    @PreAuthorize("hasAnyAuthority('sys:role:role_menu','ROLE_ADMIN')")
-    @GetMapping("/role_menu/{id}")
+    @PreAuthorize("hasAnyAuthority('sys:role:role-menu','ROLE_ADMIN')")
+    @GetMapping("/role-menu/{id}")
     public R<RoleMenuVO> getRoleMenuVO(@PathVariable("id") Long id){
         RoleMenuVO roleMenuVO = sysRoleService.getRoleMenuVO(id);
         return R.ok(roleMenuVO);

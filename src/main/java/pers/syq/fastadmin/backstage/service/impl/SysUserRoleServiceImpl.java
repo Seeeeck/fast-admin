@@ -41,5 +41,25 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
         return this.baseMapper.selectUserIdsByMenuId(menuId);
     }
 
+    @Override
+    public List<SysUserRoleEntity> listByRoleId(Long roleId) {
+        return this.list(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getRoleId, roleId));
+    }
+
+    @Override
+    public List<SysUserRoleEntity> listByRoleIds(List<Long> roleIds) {
+        return this.list(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getRoleId, roleIds));
+    }
+
+    @Override
+    public List<SysUserRoleEntity> listByUserId(Long userId) {
+        return this.list(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userId));
+    }
+
+    @Override
+    public void removeByUserId(Long userId) {
+        this.remove(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userId));
+    }
+
 
 }

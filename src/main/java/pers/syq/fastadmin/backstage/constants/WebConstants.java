@@ -11,7 +11,7 @@ public class WebConstants {
 
     private WebConstants(){}
 
-    public static enum ScheduleStatus{
+    public enum ScheduleStatus{
         /**
          * 正常
          */

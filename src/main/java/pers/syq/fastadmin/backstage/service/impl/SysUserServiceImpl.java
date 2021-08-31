@@ -148,13 +148,8 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     }
 
     private boolean isAdmin(Long userId){
-        List<SysRoleEntity> roles = sysRoleService.listByUserId(userId);
-        for (SysRoleEntity role : roles) {
-            if (SecurityConstants.ADMIN_ROLE_NAME.equals(role.getRoleName())){
-                return true;
-            }
-        }
-        return false;
+        int count = sysRoleService.countAdminByUserId(userId);
+        return count > 0;
     }
     private List<RouteVO> generateRouteVOList(Collection<SysMenuEntity> menus){
         return menus.stream().filter(menu -> menu.getParentId() == 0)
@@ -223,7 +218,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     @Transactional
     @Override
     public void saveUserDTO(UserDTO userDTO) {
-        SysUserEntity existUser = this.getOne(new LambdaQueryWrapper<SysUserEntity>().eq(SysUserEntity::getUsername, userDTO.getUsername()));
+        SysUserEntity existUser = this.getByUsername(userDTO.getUsername());
         if (existUser != null){
             throw new BaseException(ErrorCode.USERNAME_EXISTS_EXCEPTION);
         }
@@ -252,7 +247,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         }
         userEntity.setUsername(null);
         this.updateById(userEntity);
-        List<SysUserRoleEntity> userRoleEntities = sysUserRoleService.list(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userEntity.getId()));
+        List<SysUserRoleEntity> userRoleEntities = sysUserRoleService.listByUserId(userEntity.getId());
         Set<Long> roleIds = new HashSet<>();
         for (SysUserRoleEntity userRoleEntity : userRoleEntities) {
             roleIds.add(userRoleEntity.getRoleId());
@@ -260,7 +255,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         Set<Long> dtoRoleIds = userDTO.getRoleIds();
         if(!roleIds.equals(dtoRoleIds)){
             redisUtils.deleteTokenByUserId(userEntity.getId());
-            sysUserRoleService.remove(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getUserId,userEntity.getId()));
+            sysUserRoleService.removeByUserId(userEntity.getId());
             if (CollectionUtil.isNotEmpty(dtoRoleIds)){
                 sysUserRoleService.saveUserRoles(userDTO.getRoleIds(),userEntity.getId());
             }

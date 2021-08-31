@@ -53,8 +53,8 @@ public class SysUserController {
         return R.ok(sysUser);
     }
 
-    @PreAuthorize("hasAnyAuthority('sys:user:user_role','ROLE_ADMIN')")
-    @GetMapping("/user_role/{id}")
+    @PreAuthorize("hasAnyAuthority('sys:user:user-role','ROLE_ADMIN')")
+    @GetMapping("/user-role/{id}")
     public R<UserRoleVO> getUserRoleVO(@PathVariable("id") Long id){
         UserRoleVO userRoleVO = sysUserService.getUserRoleVO(id);
         return R.ok(userRoleVO);

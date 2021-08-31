@@ -81,7 +81,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
         SysRoleEntity roleEntity = new SysRoleEntity();
         BeanUtil.copyProperties(roleDTO,roleEntity);
         this.updateById(roleEntity);
-        List<SysRoleMenuEntity> roleMenuEntities = roleMenuService.list(new LambdaQueryWrapper<SysRoleMenuEntity>().eq(SysRoleMenuEntity::getRoleId, roleEntity.getId()));
+        List<SysRoleMenuEntity> roleMenuEntities = roleMenuService.listByRoleId(roleEntity.getId());
         HashSet<Long> menuIds = new HashSet<>();
         for (SysRoleMenuEntity roleMenuEntity : roleMenuEntities) {
             menuIds.add(roleMenuEntity.getMenuId());
@@ -89,7 +89,7 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
         Set<Long> dtoMenuIds = roleDTO.getMenuIds();
         if(!menuIds.equals(dtoMenuIds)){
             List<Long> userIds = userRoleService
-                    .list(new LambdaQueryWrapper<SysUserRoleEntity>().eq(SysUserRoleEntity::getRoleId, roleEntity.getId()))
+                    .listByRoleId(roleEntity.getId())
                     .stream().map(SysUserRoleEntity::getUserId).collect(Collectors.toList());
             redisUtils.deleteTokenByUserIds(userIds);
             roleMenuService.removeByRoleId(roleDTO.getId());
@@ -118,11 +118,16 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRoleEntity
     public void removeBatch(List<Long> ids) {
         this.removeByIds(ids);
         List<Long> userIds = userRoleService
-                .list(new LambdaQueryWrapper<SysUserRoleEntity>().in(SysUserRoleEntity::getRoleId, ids))
+                .listByRoleIds(ids)
                 .stream().map(SysUserRoleEntity::getUserId).collect(Collectors.toList());
         redisUtils.deleteTokenByUserIds(userIds);
         roleMenuService.removeByRoleIds(ids);
         userRoleService.removeByRoleIds(ids);
+    }
+
+    @Override
+    public int countAdminByUserId(Long userId) {
+        return this.baseMapper.selectCuntAdminByUserId(userId);
     }
 
 

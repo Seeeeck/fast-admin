@@ -47,4 +47,9 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
         return this.baseMapper.listIdCount(peerMenuIds);
     }
 
+    @Override
+    public List<SysRoleMenuEntity> listByRoleId(Long roleId) {
+        return this.list(new LambdaQueryWrapper<SysRoleMenuEntity>().eq(SysRoleMenuEntity::getRoleId, roleId));
+    }
+
 }

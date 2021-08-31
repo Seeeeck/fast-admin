@@ -16,4 +16,6 @@ import java.util.List;
 public interface SysRoleMapper extends BaseMapper<SysRoleEntity> {
 
     List<SysRoleEntity> selectListByUserId(Long userId);
+
+    int selectCuntAdminByUserId(Long userId);
 }

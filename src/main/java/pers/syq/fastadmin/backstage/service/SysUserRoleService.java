@@ -21,5 +21,13 @@ public interface SysUserRoleService extends IService<SysUserRoleEntity> {
     void removeByRoleIds(Collection<Long> roleIds);
 
     List<Long> listUserIdsByMenuId(Long menuId);
+
+    List<SysUserRoleEntity> listByRoleId(Long roleId);
+
+    List<SysUserRoleEntity> listByRoleIds(List<Long> roleIds);
+
+    List<SysUserRoleEntity> listByUserId(Long userId);
+
+    void removeByUserId(Long userId);
 }
 
