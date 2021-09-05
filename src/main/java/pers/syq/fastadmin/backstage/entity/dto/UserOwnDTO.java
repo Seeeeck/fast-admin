@@ -6,31 +6,28 @@ import com.github.houbb.sensitive.core.api.strategory.StrategyPhone;
 import lombok.Data;
 import pers.syq.fastadmin.backstage.annotation.sensitive.FastAdminSensitivePasswordStrategy;
 import pers.syq.fastadmin.backstage.annotation.sensitive.SensitiveClass;
-import pers.syq.fastadmin.backstage.common.utils.Save;
 import pers.syq.fastadmin.backstage.common.utils.Update;
 
-import javax.validation.constraints.*;
-import java.util.Set;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @Data
 @SensitiveClass
-public class UserDTO {
+public class UserOwnDTO {
+
     @NotNull(groups = {Update.class})
     private Long id;
-    @NotBlank(groups = {Save.class})
-    private String username;
     @FastAdminSensitivePasswordStrategy
-    @NotBlank(groups = Save.class)
-    @Size(min=5,groups = {Save.class,Update.class})
+    @Size(min=5,groups = {Update.class})
     private String password;
     @Sensitive(strategy = StrategyEmail.class)
-    @Email(groups = {Save.class,Update.class})
+    @Email(groups = {Update.class})
     private String email;
     @Sensitive(strategy = StrategyPhone.class)
-    @Pattern(regexp = "^[0-9]{11}$",groups = {Save.class,Update.class})
+    @Pattern(regexp = "^[0-9]{11}$",groups = {Update.class})
     private String mobile;
+    @NotNull(groups = {Update.class})
     private String avatar;
-    @NotNull(groups = {Save.class,Update.class})
-    private Boolean enable;
-    private Set<Long> roleIds;
 }

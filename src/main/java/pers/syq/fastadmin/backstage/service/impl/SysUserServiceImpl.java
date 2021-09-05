@@ -24,6 +24,7 @@ import pers.syq.fastadmin.backstage.entity.SysUserEntity;
 import pers.syq.fastadmin.backstage.entity.SysUserRoleEntity;
 import pers.syq.fastadmin.backstage.entity.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.entity.dto.UserDTO;
+import pers.syq.fastadmin.backstage.entity.dto.UserOwnDTO;
 import pers.syq.fastadmin.backstage.entity.vo.*;
 import pers.syq.fastadmin.backstage.mapper.SysUserMapper;
 import pers.syq.fastadmin.backstage.service.SysMenuService;
@@ -99,6 +100,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     }
 
     @Override
+    public void updateUserOwnDTO(UserOwnDTO userOwnDTO) {
+        String password = userOwnDTO.getPassword();
+        if (password != null && password.trim().equals("")){
+            throw new BaseException(ErrorCode.ILLEGAL_PASSWORD_EXCEPTION);
+        }
+        SysUserEntity userEntity = new SysUserEntity();
+        BeanUtil.copyProperties(userOwnDTO,userEntity);
+        if (password != null){
+            userEntity.setPassword(passwordEncoder.encode(password));
+        }
+        this.updateById(userEntity);
+    }
+
+    @Override
     public SysUserEntity getByUsername(String username) {
         return this.getOne(new LambdaQueryWrapper<SysUserEntity>().eq(SysUserEntity::getUsername, username));
     }
@@ -134,6 +149,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
     public UserInfoVO getUserInfo(Long id) {
         UserInfoVO userInfoVO = new UserInfoVO();
         SysUserEntity sysUserEntity = this.getById(id);
+        userInfoVO.setId(sysUserEntity.getId());
         userInfoVO.setUsername(sysUserEntity.getUsername());
         userInfoVO.setAvatar(sysUserEntity.getAvatar());
         List<SysMenuEntity> menus = sysMenuService.listByUserId(sysUserEntity.getId());
@@ -226,7 +242,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUserEntity
         userEntity.setCreateUserId(SecurityUtils.getUserId().get());
         BeanUtil.copyProperties(userDTO,userEntity);
         userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userEntity.setAvatar(WebConstants.DEFAULT_AVATAR);
+        if (StrUtil.isEmpty(userDTO.getAvatar())){
+            userEntity.setAvatar(WebConstants.DEFAULT_AVATAR);
+        }
         this.save(userEntity);
         if (CollectionUtil.isNotEmpty(userDTO.getRoleIds())){
             sysUserRoleService.saveUserRoles(userDTO.getRoleIds(),userEntity.getId());

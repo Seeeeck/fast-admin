@@ -18,8 +18,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import pers.syq.fastadmin.backstage.common.constants.SecurityConstants;
 import pers.syq.fastadmin.backstage.common.filter.JwtAuthorizationFilter;
 import pers.syq.fastadmin.backstage.common.utils.RedisUtils;
-import pers.syq.fastadmin.backstage.exception.JwtAccessDeniedHandler;
-import pers.syq.fastadmin.backstage.exception.JwtAuthenticationEntryPoint;
+import pers.syq.fastadmin.backstage.common.exception.JwtAccessDeniedHandler;
+import pers.syq.fastadmin.backstage.common.exception.JwtAuthenticationEntryPoint;
 
 import java.util.Arrays;
 

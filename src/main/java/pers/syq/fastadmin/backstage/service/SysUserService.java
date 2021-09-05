@@ -5,6 +5,7 @@ import pers.syq.fastadmin.backstage.common.utils.PageUtils;
 import pers.syq.fastadmin.backstage.entity.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.entity.dto.UserDTO;
 import pers.syq.fastadmin.backstage.entity.SysUserEntity;
+import pers.syq.fastadmin.backstage.entity.dto.UserOwnDTO;
 import pers.syq.fastadmin.backstage.entity.vo.UserInfoVO;
 import pers.syq.fastadmin.backstage.entity.vo.UserRoleVO;
 
@@ -40,5 +41,7 @@ public interface SysUserService extends IService<SysUserEntity> {
     SysUserEntity getByUsername(String username);
 
     boolean isLegalCaptchaCode(String redisCodeKey, String code);
+
+    void updateUserOwnDTO(UserOwnDTO userOwnDTO);
 }
 

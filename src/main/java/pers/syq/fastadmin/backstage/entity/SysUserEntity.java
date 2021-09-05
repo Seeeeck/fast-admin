@@ -1,6 +1,7 @@
 package pers.syq.fastadmin.backstage.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -33,6 +34,7 @@ public class SysUserEntity implements Serializable {
 	/**
 	 * 密码
 	 */
+	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	private String password;
 
 	/**

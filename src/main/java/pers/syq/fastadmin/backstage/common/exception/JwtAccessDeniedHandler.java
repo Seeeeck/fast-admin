@@ -1,4 +1,4 @@
-package pers.syq.fastadmin.backstage.exception;
+package pers.syq.fastadmin.backstage.common.exception;
 
 import cn.hutool.json.JSONUtil;
 import org.springframework.security.access.AccessDeniedException;

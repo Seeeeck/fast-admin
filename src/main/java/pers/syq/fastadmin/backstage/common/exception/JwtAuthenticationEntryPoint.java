@@ -1,11 +1,10 @@
-package pers.syq.fastadmin.backstage.exception;
+package pers.syq.fastadmin.backstage.common.exception;
 
 import cn.hutool.json.JSONUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import pers.syq.fastadmin.backstage.constants.WebConstants;
-import pers.syq.fastadmin.backstage.common.exception.ErrorCode;
 import pers.syq.fastadmin.backstage.common.utils.R;
+import pers.syq.fastadmin.backstage.constants.WebConstants;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

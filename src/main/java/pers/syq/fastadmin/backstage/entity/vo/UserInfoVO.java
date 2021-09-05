@@ -7,6 +7,7 @@ import java.util.Set;
 
 @Data
 public class UserInfoVO {
+    private Long id;
     private String username;
     private String avatar;
     private List<RouteVO> menus;

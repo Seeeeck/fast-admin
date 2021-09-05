@@ -8,13 +8,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import pers.syq.fastadmin.backstage.annotation.SysLog;
 import pers.syq.fastadmin.backstage.common.entity.AuthUser;
-import pers.syq.fastadmin.backstage.common.utils.PageUtils;
-import pers.syq.fastadmin.backstage.common.utils.R;
-import pers.syq.fastadmin.backstage.common.utils.Save;
-import pers.syq.fastadmin.backstage.common.utils.Update;
+import pers.syq.fastadmin.backstage.common.utils.*;
 import pers.syq.fastadmin.backstage.entity.dto.LoginDTO;
 import pers.syq.fastadmin.backstage.entity.dto.UserDTO;
 import pers.syq.fastadmin.backstage.entity.SysUserEntity;
+import pers.syq.fastadmin.backstage.entity.dto.UserOwnDTO;
 import pers.syq.fastadmin.backstage.service.SysUserService;
 import pers.syq.fastadmin.backstage.entity.vo.LoginVO;
 import pers.syq.fastadmin.backstage.entity.vo.UserInfoVO;
@@ -46,10 +44,11 @@ public class SysUserController {
         return R.ok(page);
     }
 
-    @PreAuthorize("hasAnyAuthority('sys:user:get','ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('sys:user:get','ROLE_ADMIN') or #authUser.userId == #id")
     @GetMapping("/{id}")
-    public R<SysUserEntity> getById(@PathVariable("id") Long id){
+    public R<SysUserEntity> getById(@PathVariable("id") Long id,@AuthenticationPrincipal AuthUser authUser){
 		SysUserEntity sysUser = sysUserService.getById(id);
+		sysUser.setPassword(null);
         return R.ok(sysUser);
     }
 
@@ -69,10 +68,18 @@ public class SysUserController {
     }
 
     @SysLog("Update user")
-    @PreAuthorize("hasAnyAuthority('sys:user:update','ROLE_ADMIN') or #authUser.userId == #userDTO.id")
+    @PreAuthorize("hasAnyAuthority('sys:user:update','ROLE_ADMIN')")
     @PutMapping
-    public R<?> update(@RequestBody @Validated(Update.class) UserDTO userDTO,@AuthenticationPrincipal AuthUser authUser){
+    public R<?> update(@RequestBody @Validated(Update.class) UserDTO userDTO){
 		sysUserService.updateUserDTO(userDTO);
+        return R.ok();
+    }
+
+    @SysLog("Update user(own)")
+    @PreAuthorize("#authUser.userId == #userOwnDTO.id")
+    @PutMapping("/own")
+    public R<?> updateOwn(@RequestBody @Validated(Update.class)UserOwnDTO userOwnDTO, @AuthenticationPrincipal AuthUser authUser){
+        sysUserService.updateUserOwnDTO(userOwnDTO);
         return R.ok();
     }
 

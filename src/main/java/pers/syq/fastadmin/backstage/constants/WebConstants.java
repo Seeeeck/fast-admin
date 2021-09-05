@@ -7,7 +7,7 @@ public class WebConstants {
      */
     public static final Integer CAPTCHA_EXPIRATION = 5;
 
-    public static final String DEFAULT_AVATAR = "http://img.72qq.com/file/202102/22/a99922af3c.jpg";
+    public static final String DEFAULT_AVATAR = "@/assets/avatar/cute1.jpg";
 
     private WebConstants(){}
 
