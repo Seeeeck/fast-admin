@@ -40,7 +40,7 @@ public final class SecurityConstants {
             "/v3/api-docs",
             "/webjars/**",
             //knife4j
-            "/doc.html",
+            "/doc.html"
     };
 
 
@@ -49,6 +49,12 @@ public final class SecurityConstants {
             "/sys/user/login",
             "/sys/user/logout",
             "/sys/captcha"
+    };
+
+    public static final String[] STATIC_WHITELIST = {
+            "/index.html",
+            "/static/**",
+            "/"
     };
 
     private SecurityConstants() {

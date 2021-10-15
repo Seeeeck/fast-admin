@@ -44,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers(SecurityConstants.SWAGGER_WHITELIST).permitAll()
                 .antMatchers(HttpMethod.POST,SecurityConstants.SYSTEM_WHITELIST).permitAll()
+                .antMatchers(SecurityConstants.STATIC_WHITELIST).permitAll()
                 .antMatchers(HttpMethod.OPTIONS,"/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
